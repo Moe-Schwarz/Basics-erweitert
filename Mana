@@ -1,0 +1,1255 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moe's Lernbar | Management Basics</title>
+    
+    <!-- TAILWIND CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- KONFIGURATION: NEUTRALES BRANDING (Orange/Grau) -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        moe: {
+                            primary: '#F97316',  /* Warm Orange (Tailwind Orange 500) */
+                            dark: '#C2410C',     /* Darker Orange (Tailwind Orange 700) */
+                            accent: '#FDBA74',   /* Light Orange (Tailwind Orange 300) */
+                            gray: '#4B5563',     /* Neutral Gray (Tailwind Gray 600) */
+                            light: '#FFF7ED',    /* Very Light Orange for Backgrounds (Tailwind Orange 50) */
+                            error: '#EF4444',    /* Red for wrong */
+                            gold: '#F59E0B',     /* Gold/Amber for expert */
+                            coffee: '#EAB308'    /* Amber for Coffee Button */
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'], 
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.4s ease-out',
+                        'slide-up': 'slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
+                    },
+                    keyframes: {
+                        fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
+                        slideUp: { '0%': { transform: 'translateY(20px)', opacity: '0' }, '100%': { transform: 'translateY(0)', opacity: '1' } }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Progress Circle */
+        .progress-ring__circle {
+            transition: stroke-dashoffset 1s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+        
+        /* Learning Content Typography - Deep Reading Optimized */
+        .learn-article h3 { font-size: 1.7rem; font-weight: bold; color: #F97316; margin-top: 2.5rem; margin-bottom: 1.2rem; border-bottom: 3px solid #FDBA74; display: block; padding-bottom: 0.4rem;}
+        .learn-article h4 { font-size: 1.3rem; font-weight: bold; color: #374151; margin-top: 2rem; margin-bottom: 0.8rem; }
+        .learn-article h5 { font-size: 1.1rem; font-weight: bold; color: #F97316; margin-top: 1.2rem; margin-bottom: 0.5rem; }
+        .learn-article p { margin-bottom: 1.2rem; line-height: 1.8; color: #4B5563; font-size: 1.05rem; text-align: justify; }
+        .learn-article ul { list-style: none; padding-left: 0; margin-bottom: 1.5rem; }
+        .learn-article li { position: relative; padding-left: 1.5rem; margin-bottom: 0.6rem; line-height: 1.7; color: #4B5563; font-size: 1.05rem;}
+        .learn-article li::before { content: "■"; color: #F97316; font-size: 0.8rem; position: absolute; left: 0; top: 0.35rem; }
+        .learn-article strong { color: #111827; font-weight: 700; }
+        .learn-article .box-info { background: #FFF7ED; border-left: 5px solid #F97316; padding: 1.5rem; margin: 2rem 0; border-radius: 0.25rem; box-shadow: 0 2px 4px rgba(0,0,0,0.05);}
+        .learn-article .box-highlight { background: #FEF3C7; border-left: 5px solid #D97706; padding: 1.5rem; margin: 2rem 0; border-radius: 0.25rem; }
+        
+        /* Tables */
+        .academic-table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; font-size: 0.95rem; }
+        .academic-table th { background-color: #F97316; color: white; padding: 10px; text-align: left; border: 1px solid #C2410C; }
+        .academic-table td { padding: 10px; border: 1px solid #ddd; background-color: white; color: #333; }
+        .academic-table tr:nth-child(even) td { background-color: #f9f9f9; }
+
+        /* Flashcard 3D Flip */
+        .perspective-1000 { perspective: 1000px; }
+        .transform-style-3d { transform-style: preserve-3d; }
+        .backface-hidden { backface-visibility: hidden; }
+        .rotate-y-180 { transform: rotateY(180deg); }
+        .flashcard-inner { transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1); }
+        
+        /* Scrollbar */
+        .custom-scroll::-webkit-scrollbar { width: 8px; }
+        .custom-scroll::-webkit-scrollbar-track { background: #f1f1f1; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #FDBA74; border-radius: 4px; }
+        .custom-scroll::-webkit-scrollbar-thumb:hover { background: #F97316; }
+
+        /* AI Text Formatting */
+        .ai-formatted strong { color: #F97316; font-weight: bold; }
+        .ai-formatted em { font-style: italic; color: #374151; }
+    </style>
+</head>
+<body class="bg-gray-50 text-moe-gray min-h-screen flex flex-col font-sans selection:bg-moe-primary selection:text-white">
+
+    <!-- HEADER -->
+    <header class="bg-white border-b-4 border-moe-primary sticky top-0 z-50 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-4 cursor-pointer group" onclick="app.goHome()">
+                <div class="flex flex-col border-r-2 border-gray-200 pr-4">
+                    <span class="font-bold text-2xl tracking-tight text-moe-primary leading-none">Moe's Lernbar</span>
+                </div>
+                <div class="flex flex-col hidden sm:flex">
+                    <span class="font-semibold text-sm text-gray-600 uppercase tracking-widest">Management Basics</span>
+                    <span class="text-xs text-gray-500">Professional Training</span>
+                </div>
+            </div>
+            
+            <div class="flex gap-2 items-center flex-wrap justify-end">
+                <!-- COFFEE BUTTON IM HEADER -->
+                <a href="https://paypal.me/MoeSchwarz" target="_blank" class="hidden lg:flex items-center gap-2 px-3 py-2 rounded bg-moe-coffee hover:bg-yellow-500 text-white text-sm font-bold transition-all shadow-sm">
+                    ☕ Kaffeekasse
+                </a>
+                <button onclick="app.showModal('modal-btc')" class="hidden lg:flex items-center gap-2 px-3 py-2 rounded bg-orange-500 hover:bg-orange-600 text-white text-sm font-bold transition-all shadow-sm">
+                    ⚡ Lightning
+                </button>
+
+                <div class="w-px h-6 bg-gray-300 mx-2 hidden lg:block"></div>
+
+                <!-- NAVIGATION BUTTONS -->
+                <button onclick="app.goHome()" class="flex items-center gap-2 px-3 py-2 rounded bg-white border border-gray-200 hover:bg-gray-50 text-moe-gray text-sm font-bold transition-all shadow-sm">
+                    📊 Dashboard
+                </button>
+                <button onclick="app.switchView('view-flashcards')" class="flex items-center gap-2 px-3 py-2 rounded bg-moe-light hover:bg-orange-100 text-moe-dark text-sm font-bold transition-all shadow-sm">
+                    🗂️ Karten
+                </button>
+                <button onclick="app.switchView('view-learning')" class="flex items-center gap-2 px-3 py-2 rounded bg-moe-primary hover:bg-moe-dark text-white text-sm font-bold transition-all shadow-sm">
+                    📖 Skript
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 relative">
+        
+        <!-- VIEW: DASHBOARD -->
+        <div id="view-dashboard" class="space-y-10 animate-fade-in">
+            <div class="text-center max-w-3xl mx-auto pt-6">
+                <h1 class="text-4xl md:text-5xl font-bold text-moe-gray mb-4">Management <span class="text-moe-primary">Basics</span></h1>
+                <p class="text-lg text-gray-500 mb-6">Gesundheitswesen & Gefahrenabwehr. Das vollwertige digitale Vorlesungsskript.</p>
+                
+                <!-- CREATOR MESSAGE / KAFFEEKASSE -->
+                <div class="bg-blue-50 border border-blue-100 text-blue-800 p-6 rounded-xl max-w-2xl mx-auto mb-8 shadow-sm text-center">
+                    <p class="mb-4 text-base leading-relaxed"><strong>👋 Hey!</strong> Hat dir diese Lernhilfe geholfen, besser durch den Stoff zu kommen? Wenn du hier Zeit und Nerven gespart hast, freue ich mich riesig über einen kleinen Tip in die Kaffeekasse! ☕💙</p>
+                    <div class="flex flex-wrap justify-center gap-3">
+                        <a href="https://paypal.me/MoeSchwarz" target="_blank" class="flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#0070ba] text-white text-sm font-bold transition-all hover:bg-blue-700 shadow">
+                            <span>💳</span> PayPal
+                        </a>
+                        <button onclick="app.showModal('modal-btc')" class="flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#f7931a] text-white text-sm font-bold transition-all hover:bg-orange-600 shadow">
+                            <span>⚡</span> Lightning
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap justify-center gap-4">
+                    <button onclick="app.resetData()" class="text-sm text-gray-400 hover:text-moe-error underline self-center px-4">Lernstand komplett löschen</button>
+                </div>
+            </div>
+
+            <!-- Master Quiz Card -->
+            <div onclick="app.checkQuizStart('all')" class="group relative bg-white rounded p-8 shadow-lg cursor-pointer hover:shadow-xl transition-all duration-300 border-l-8 border-moe-primary overflow-hidden">
+                <div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
+                    <div class="flex-1 text-center md:text-left">
+                        <div class="flex items-center justify-center md:justify-start gap-3 mb-3">
+                            <span class="px-3 py-1 rounded bg-moe-primary text-white text-xs font-bold uppercase tracking-wider">Klausur-Simulation</span>
+                            <span class="px-3 py-1 rounded bg-yellow-100 text-moe-gold border border-yellow-300 text-xs font-bold uppercase tracking-wider">★ 50 aus 76 Fragen</span>
+                        </div>
+                        <h2 class="text-2xl font-bold text-moe-gray mb-2">Master-Prüfung: Management Basics</h2>
+                        <p class="text-gray-500">Der Algorithmus generiert eine Klausur mit 50 Fragen aus allen Vorlesungsteilen. Modul-Ergebnisse zählen hier nicht hinein.</p>
+                    </div>
+                    <!-- Circle Master: BUG FIX #3 - use r=45 consistently -->
+                    <div class="relative w-28 h-28 flex-shrink-0">
+                        <svg class="w-full h-full transform -rotate-90">
+                            <circle cx="50%" cy="50%" r="45" fill="none" stroke="#E5E7EB" stroke-width="8" />
+                            <circle id="dash-master-prog" cx="50%" cy="50%" r="45" fill="none" stroke="#F97316" stroke-width="8" stroke-dasharray="282.7" stroke-dashoffset="282.7" class="progress-ring__circle" stroke-linecap="round" />
+                        </svg>
+                        <div class="absolute inset-0 flex flex-col items-center justify-center">
+                            <span id="dash-master-text" class="text-moe-gray font-bold text-xl">0%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="text-xl font-bold text-moe-gray mt-12 mb-4 border-b pb-2">Die Gliederung der Vorlesung (Module)</h3>
+            <!-- Pillars Grid -->
+            <div id="cluster-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+        </div>
+
+        <!-- VIEW: FLASHCARDS -->
+        <div id="view-flashcards" class="hidden h-[calc(100vh-120px)] animate-fade-in flex flex-col items-center justify-center">
+            <div class="w-full max-w-2xl mb-6 flex justify-between items-center shrink-0">
+                <h2 class="text-2xl font-bold text-moe-gray">Flashcards</h2>
+                <!-- BUG FIX #5: counter set dynamically in init, not hardcoded -->
+                <span class="text-gray-500 font-bold" id="fc-counter">1 / ?</span>
+                <button onclick="app.goHome()" class="text-moe-primary hover:text-moe-dark font-bold">✕ Schließen</button>
+            </div>
+
+            <!-- Card Container - with touch swipe support (OPT #4) -->
+            <div id="flashcard-container" class="w-full max-w-2xl h-80 perspective-1000 cursor-pointer shrink-0" onclick="app.flipFlashcard()">
+                <div id="flashcard-inner" class="w-full h-full relative transform-style-3d flashcard-inner shadow-xl rounded-xl">
+                    <!-- Front -->
+                    <div class="absolute w-full h-full backface-hidden bg-white border-2 border-moe-accent rounded-xl flex flex-col items-center justify-center p-8 text-center">
+                        <span class="text-sm font-bold text-moe-primary uppercase tracking-widest mb-4">Begriff</span>
+                        <h3 id="fc-front" class="text-3xl font-bold text-moe-gray leading-tight">Lade...</h3>
+                        <p class="text-gray-400 mt-8 text-sm">Klicken zum Umdrehen</p>
+                    </div>
+                    <!-- Back -->
+                    <div class="absolute w-full h-full backface-hidden bg-moe-primary rounded-xl flex flex-col items-center justify-center p-8 text-center rotate-y-180">
+                        <span class="text-sm font-bold text-moe-light uppercase tracking-widest mb-4">Definition</span>
+                        <p id="fc-back" class="text-xl text-white font-medium leading-relaxed overflow-y-auto">Lade...</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="w-full max-w-2xl mt-8 flex justify-between gap-4 shrink-0">
+                <button onclick="app.nextFlashcard(-1)" class="flex-1 bg-white border border-gray-300 text-moe-gray py-3 rounded font-bold hover:bg-gray-50 shadow-sm">❮ Vorherige</button>
+                <button onclick="app.nextFlashcard(1)" class="flex-1 bg-moe-primary text-white py-3 rounded font-bold hover:bg-moe-dark shadow-sm">Nächste ❯</button>
+            </div>
+        </div>
+
+        <!-- VIEW: LEARNING HUB -->
+        <div id="view-learning" class="hidden h-[calc(100vh-140px)] animate-fade-in flex flex-col">
+            <div class="flex items-center justify-between mb-4 shrink-0">
+                <h2 class="text-2xl font-bold text-moe-gray">Wissens-Hub</h2>
+                <button onclick="app.goHome()" class="text-moe-primary hover:text-moe-dark font-bold px-4">✕ Zurück</button>
+            </div>
+            <div class="flex-grow grid grid-cols-1 lg:grid-cols-4 gap-6 overflow-hidden">
+                <div class="lg:col-span-1 space-y-2 overflow-y-auto custom-scroll pr-2" id="learn-menu"></div>
+                <div class="lg:col-span-3 bg-white shadow-md border border-gray-200 overflow-hidden flex flex-col relative rounded">
+                    <div id="learn-placeholder" class="flex flex-col items-center justify-center h-full text-center text-gray-400 p-10">
+                        <span class="text-6xl mb-4 opacity-20">📖</span>
+                        <h3 class="text-xl font-bold">Wähle ein Kapitel</h3>
+                        <p class="mt-2">Das detaillierte Vorlesungsskript wird hier geladen.</p>
+                    </div>
+                    <div id="learn-content-scroll-area" class="hidden h-full overflow-y-auto custom-scroll">
+                        <div id="learn-content" class="p-8 md:p-12 learn-article"></div>
+                        
+                        <!-- AI TUTOR IN LEARNING HUB -->
+                        <div id="ai-tutor-section" class="mx-8 md:mx-12 mb-12 p-6 bg-moe-light rounded border border-moe-accent shadow-sm">
+                            <h4 class="text-lg font-bold text-moe-primary mb-2 flex items-center gap-2">
+                                <span>✨</span> Frag den KI-Tutor
+                            </h4>
+                            <p class="text-sm text-moe-gray mb-4">Hast du ein Konzept in diesem Kapitel nicht ganz verstanden? Stelle deine Frage direkt an unsere KI, die basierend auf dem Vorlesungsskript antwortet.</p>
+                            <div class="flex flex-col sm:flex-row gap-3">
+                                <input type="text" id="ai-question-input" class="flex-1 p-3 rounded border border-gray-300 focus:outline-none focus:border-moe-primary focus:ring-1 focus:ring-moe-primary transition-all" placeholder="Z.B.: Erkläre mir nochmal das Beispiel mit Lisa & Max.">
+                                <button onclick="app.askAIInHub()" class="bg-moe-primary text-white px-6 py-3 rounded font-bold hover:bg-moe-dark transition-all flex items-center justify-center shrink-0 min-w-[120px]" id="ai-ask-btn">Fragen</button>
+                            </div>
+                            <div id="ai-answer-box" class="hidden mt-4 p-5 bg-white border border-gray-200 rounded text-moe-gray text-sm leading-relaxed shadow-inner ai-formatted"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW: QUIZ -->
+        <div id="view-quiz" class="hidden max-w-4xl mx-auto animate-fade-in pb-20">
+            <div class="bg-white p-4 shadow-sm mb-6 flex flex-col sm:flex-row items-center justify-between gap-4 border border-gray-200 sticky top-2 z-40 rounded">
+                <div class="flex items-center gap-4 w-full sm:w-auto">
+                    <div class="w-10 h-10 rounded bg-moe-primary text-white font-bold flex items-center justify-center text-lg" id="q-index">1</div>
+                    <div class="flex flex-col">
+                        <span class="text-xs text-gray-400 font-bold uppercase block leading-none">Fortschritt</span>
+                        <span class="text-lg font-bold text-moe-gray"><span id="q-current">1</span> / <span id="q-total">50</span></span>
+                    </div>
+                </div>
+                <div class="w-full sm:max-w-md h-2 bg-gray-200 overflow-hidden rounded">
+                    <div id="progress-bar" class="h-full bg-moe-primary transition-all duration-500 w-0"></div>
+                </div>
+                <button onclick="app.goHome()" class="text-xs font-bold uppercase tracking-wider text-gray-500 border border-gray-300 px-4 py-2 rounded hover:bg-gray-100 transition-colors">Abbrechen</button>
+            </div>
+            
+            <div class="bg-white shadow-lg border border-gray-200 relative min-h-[400px] rounded">
+                <div id="star-badge" class="hidden absolute top-0 right-0 bg-moe-gold text-white px-4 py-1 font-bold text-xs uppercase tracking-wider shadow-sm z-10 flex items-center gap-1 rounded-bl"><span>★</span> Transferaufgabe</div>
+                <div class="p-8 md:p-10">
+                    <span id="q-cat-label" class="inline-block px-2 py-1 bg-moe-light text-moe-primary text-xs font-bold uppercase tracking-wider mb-4 rounded">Thema</span>
+                    <h2 id="q-text" class="text-xl md:text-2xl font-bold text-moe-gray mb-8 leading-snug">Frage...</h2>
+                    <div id="options-container" class="grid grid-cols-1 gap-3 mb-8"></div>
+                    
+                    <!-- Feedback Layer -->
+                    <div id="feedback-layer" class="hidden bg-moe-light p-6 border-l-4 border-moe-primary animate-slide-up rounded">
+                        <div class="flex items-start gap-4">
+                            <div id="fb-icon" class="w-10 h-10 rounded flex items-center justify-center shrink-0 text-xl font-bold text-white"></div>
+                            <div class="flex-1 w-full">
+                                <h3 id="fb-title" class="font-bold text-xl mb-2"></h3>
+                                <div id="fb-text" class="text-moe-gray mb-4 text-md leading-relaxed"></div>
+                                <div class="bg-white p-4 border border-gray-200 flex gap-3 items-center rounded mb-4 shadow-sm">
+                                    <span class="text-xl">💡</span>
+                                    <div>
+                                        <span class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Merkregel</span>
+                                        <span id="fb-memo" class="text-moe-primary font-bold text-sm"></span>
+                                    </div>
+                                </div>
+                                
+                                <!-- AI Explanation Feature -->
+                                <div class="border-t border-gray-200 pt-4 mt-2">
+                                    <button id="ai-explain-btn" onclick="app.explainWithAI()" class="text-sm text-moe-primary font-bold flex items-center gap-2 hover:text-moe-dark transition-colors bg-white border border-moe-accent px-4 py-2 rounded shadow-sm hover:shadow">
+                                        <span>✨</span> Lass dir das genauer von der KI erklären
+                                    </button>
+                                    <div id="ai-explain-box" class="hidden mt-3 p-4 bg-white border border-moe-accent rounded text-sm text-moe-gray leading-relaxed shadow-inner ai-formatted"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-50 px-8 py-5 border-t border-gray-200 flex justify-end">
+                    <button id="btn-next" onclick="app.nextQuestion()" class="bg-moe-primary hover:bg-moe-dark text-white font-bold py-3 px-10 rounded shadow transition-all disabled:opacity-50 disabled:cursor-not-allowed">Weiter ❯</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW: RESULTS -->
+        <div id="view-results" class="hidden max-w-4xl mx-auto animate-fade-in text-center pt-10">
+            <div class="bg-white rounded p-12 shadow-xl border-t-8 border-moe-primary relative">
+                <h2 class="text-3xl font-bold text-moe-gray mb-2">Prüfungsergebnis</h2>
+                <!-- BUG FIX #7: subtitle set dynamically -->
+                <p id="result-subtitle" class="text-gray-500 mb-8">Zusammenfassung deiner Leistung.</p>
+                
+                <div class="flex justify-center mb-8">
+                    <div class="relative w-48 h-48 flex items-center justify-center">
+                        <svg class="w-full h-full transform -rotate-90">
+                            <circle cx="50%" cy="50%" r="80" stroke="#F3F4F6" stroke-width="12" fill="none"/>
+                            <circle id="res-circle" cx="50%" cy="50%" r="80" stroke="#F97316" stroke-width="12" fill="none" stroke-dasharray="502.6" stroke-dashoffset="502.6" class="progress-ring__circle" stroke-linecap="round" />
+                        </svg>
+                        <div class="absolute inset-0 flex flex-col items-center justify-center">
+                            <span id="res-score" class="text-5xl font-bold text-moe-gray">0%</span>
+                            <span class="text-xs text-gray-400 font-bold uppercase mt-1">Korrekt</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <p id="res-msg" class="text-lg font-bold text-moe-gray mb-10 max-w-xl mx-auto"></p>
+                
+                <!-- COFFEE PITCH ON SUCCESS -->
+                <div class="bg-blue-50 border border-blue-100 p-6 rounded-xl mb-10 max-w-lg mx-auto shadow-sm text-center">
+                    <h4 class="font-bold text-lg text-blue-900 mb-2">Hat dir das Training geholfen?</h4>
+                    <p class="text-sm text-blue-800 mb-5">Wenn du dich jetzt sicherer fühlst und die App nützlich fandest, freue ich mich riesig über einen kleinen Support für die Kaffeekasse! ☕</p>
+                    <div class="flex flex-wrap justify-center gap-3">
+                        <a href="https://paypal.me/MoeSchwarz" target="_blank" class="flex-1 flex justify-center items-center gap-2 px-4 py-3 rounded-xl bg-[#0070ba] text-white text-sm font-bold transition-all hover:bg-blue-700 shadow">
+                            <span>💳</span> PayPal
+                        </a>
+                        <button onclick="app.showModal('modal-btc')" class="flex-1 flex justify-center items-center gap-2 px-4 py-3 rounded-xl bg-[#f7931a] text-white text-sm font-bold transition-all hover:bg-orange-600 shadow">
+                            <span>⚡</span> Lightning
+                        </button>
+                    </div>
+                </div>
+                
+                <button onclick="app.goHome()" class="bg-moe-gray hover:bg-black text-white font-bold py-3 px-10 rounded shadow transition-all">
+                    Zurück zur Übersicht
+                </button>
+            </div>
+        </div>
+
+        <!-- MODAL: RETRY OPTION -->
+        <div id="modal-retry" class="fixed inset-0 z-[60] bg-gray-900/80 hidden flex items-center justify-center p-4 animate-fade-in">
+            <div class="bg-white rounded-2xl max-w-md w-full p-8 shadow-2xl relative border-t-4 border-moe-primary text-center">
+                <h2 class="text-2xl font-bold mb-4 text-moe-gray">Modul fortsetzen</h2>
+                <p class="text-gray-500 mb-6 text-sm">Du hast dieses Modul bereits bearbeitet. Wie möchtest du fortfahren?</p>
+                <div class="space-y-3">
+                    <button onclick="app.startQuizMode('retry')" class="w-full bg-moe-primary text-white p-4 rounded-xl font-bold text-left hover:bg-moe-dark flex justify-between shadow-sm transition-all">
+                        <span>Nur falsche Fragen wiederholen</span> <span>↺</span>
+                    </button>
+                    <button onclick="app.startQuizMode('reset')" class="w-full border border-gray-300 text-moe-gray p-4 rounded-xl font-bold text-left hover:border-moe-error hover:text-moe-error flex justify-between transition-all">
+                        <span>Komplett neu starten</span> <span>✕</span>
+                    </button>
+                </div>
+                <button onclick="app.hideModal('modal-retry')" class="mt-6 w-full text-gray-400 text-sm font-bold hover:text-gray-600">Abbrechen</button>
+            </div>
+        </div>
+
+        <!-- MODAL: PERFECT SCORE -->
+        <div id="modal-perfect" class="fixed inset-0 z-[60] bg-gray-900/80 hidden flex items-center justify-center p-4 animate-fade-in">
+            <div class="bg-white rounded-2xl max-w-md w-full p-8 shadow-2xl relative border-t-4 border-moe-primary text-center">
+                <div class="text-5xl mb-4">🏆</div>
+                <h2 class="text-2xl font-bold mb-2 text-moe-gray">Modul perfekt!</h2>
+                <p class="text-gray-500 mb-6 text-sm">Du hast bereits alle Fragen dieses Moduls richtig beantwortet. Möchtest du es zurücksetzen und neu üben?</p>
+                <div class="space-y-3">
+                    <button onclick="app.startQuizMode('reset')" class="w-full bg-moe-primary hover:bg-moe-dark text-white p-4 rounded-xl font-bold transition-colors">
+                        Neu starten ⟳
+                    </button>
+                    <button onclick="app.hideModal('modal-perfect')" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 p-4 rounded-xl font-bold transition-colors">
+                        Zurück
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL: CONFIRM ABORT -->
+        <div id="modal-abort" class="fixed inset-0 z-[100] bg-gray-900/80 hidden flex items-center justify-center p-4 animate-fade-in">
+            <div class="bg-white rounded-2xl max-w-sm w-full p-8 text-center shadow-2xl">
+                <div class="text-4xl mb-4">⏸️</div>
+                <h3 class="text-2xl font-bold mb-2 text-moe-gray">Quiz beenden?</h3>
+                <p class="text-sm text-gray-500 mb-8">Dein bisheriger Fortschritt wird automatisch gespeichert.</p>
+                <div class="flex gap-3">
+                    <button onclick="app.hideModal('modal-abort')" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-3 rounded-xl font-bold transition-colors">Weiter</button>
+                    <button onclick="app.confirmAbort()" class="flex-1 bg-moe-error hover:bg-red-600 text-white py-3 rounded-xl font-bold transition-colors">Beenden</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL: CONFIRM RESET -->
+        <div id="modal-reset" class="fixed inset-0 z-[100] bg-gray-900/80 hidden flex items-center justify-center p-4 animate-fade-in">
+            <div class="bg-white rounded-2xl max-w-sm w-full p-8 text-center shadow-2xl border-t-4 border-moe-error">
+                <h3 class="text-2xl font-bold mb-2 text-moe-gray">Lernstand löschen?</h3>
+                <p class="text-sm text-gray-500 mb-8">Möchtest du wirklich alle Fortschritte und Statistiken unwiderruflich löschen?</p>
+                <div class="flex gap-3">
+                    <button onclick="app.hideModal('modal-reset')" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-3 rounded-xl font-bold transition-colors">Abbrechen</button>
+                    <button onclick="app.confirmReset()" class="flex-1 bg-moe-error hover:bg-red-600 text-white py-3 rounded-xl font-bold transition-colors">Ja, löschen</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL: LIGHTNING -->
+        <div id="modal-btc" class="fixed inset-0 z-[100] bg-gray-900/90 hidden flex items-center justify-center p-4" onclick="this.classList.add('hidden')">
+            <div class="bg-white rounded-2xl max-w-sm w-full p-8 text-center shadow-2xl" onclick="event.stopPropagation()">
+                <h3 class="text-xl font-bold mb-4 text-moe-gray">Lightning Spende</h3>
+                <div class="bg-gray-100 p-4 rounded-xl mb-4 flex justify-center">
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=lightning:moeschwarz@blink.sv" alt="Lightning QR" class="w-48 h-48">
+                </div>
+                <p class="text-sm font-bold text-gray-700 break-all mb-6">moeschwarz@blink.sv</p>
+                <button onclick="app.hideModal('modal-btc')" class="w-full bg-gray-200 text-gray-700 py-3 rounded-xl font-bold hover:bg-gray-300 transition-colors">Schließen</button>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        /* DATENBANK: 6 SÄULEN (P0-P5), 76 FRAGEN, 57 FLASHCARDS - KOMPLETT UND UNGEKÜRZT */
+        const contentDB = {
+            pillars: [
+                {
+                    id: 'P0', title: '0. Einführung in die Vorlesung', desc: 'Modulziele, Prüfungsformen, Social Entrepreneurship und Literatur.',
+                    content: `
+                        <h3>Einführung in die Vorlesung</h3>
+                        <p>Das Modul "Management Basics im Gesundheitswesen" legt das unverzichtbare betriebswirtschaftliche Fundament für angehende Manager im Gesundheits- und Sozialwesen.</p>
+                        
+                        <h4>Relevante Kernthemen</h4>
+                        <ul>
+                            <li>Die grundlegenden <strong>Begriffe der Betriebswirtschaftslehre</strong> präzise beschreiben und voneinander abgrenzen.</li>
+                            <li>Gängige <strong>Funktionsbereiche</strong> einer Institution sowie deren Interdependenzen definieren.</li>
+                            <li><strong>Social Entrepreneurship (Soziales Unternehmertum):</strong> Ein zentrales Konzept. Es beschreibt unternehmerisches Handeln, das primär auf die Lösung gesellschaftlicher/sozialer Probleme ausgerichtet ist und nicht rein auf Profitmaximierung für Aktionäre.</li>
+                        </ul>
+                        
+                        <div class="box-info">
+                            <h4>Prüfungsleistung (Die Klausur)</h4>
+                            <p>Besonders wichtig für die Vorbereitung ist die <strong>Transferaufgabe</strong>. Hierbei reicht reines Auswendiglernen nicht aus; das gelernte Wissen muss auf neue, praxisnahe Sachverhalte (Case Studies) angewendet werden.</p>
+                            <p><strong>Typisches Beispiel für eine Transferaufgabe:</strong><br>
+                            <em>"Beschreiben Sie die Möglichkeiten und die Grenzen des wirtschaftlichen Handelns in der Gefahrenabwehr an einem praktischen Beispiel!"</em></p>
+                            <p><strong>Zentrale Pflichtliteratur:</strong><br>
+                            - Busse, Schreyögg, Stargardt: <em>"Management im Gesundheitswesen: Das Lehrbuch für Studium und Praxis"</em> (Springer Verlag)<br>
+                            - Wasem, Matusiewicz u.a.: <em>"Medizinmanagement: Grundlagen und Praxis"</em> (MWV)<br>
+                            - Wendt, P. U.: <em>"Lehrbuch Soziale Arbeit"</em> (Beltz Juventa)</p>
+                        </div>
+                    `
+                },
+                {
+                    id: 'P1', title: '1. Einführung in die Thematik', desc: 'Das fundamentale Problem: Die Knappheit der Ressourcen.',
+                    content: `
+                        <h3>Einführung in die Thematik</h3>
+                        <p>Wirtschaften bedeutet im Kern den planvollen und vernünftigen Umgang mit Ressourcen. Dies ist in der Gefahrenabwehr und Medizin elementar, da hier Leben gerettet werden müssen, Budgets aber immer limitiert sind.</p>
+                        
+                        <div class="box-highlight">
+                            <h4>Basis-Formeln der BWL</h4>
+                            <p>Diese Zusammenhänge müssen für die Klausur sitzen:</p>
+                            <ul class="list-none pl-0">
+                                <li class="mb-3"><strong>Umsatz berechnen:</strong><br>
+                                <code class="bg-white px-2 py-1 rounded text-moe-primary font-bold">Umsatz = Menge × Preis</code></li>
+                                <li><strong>Gewinn berechnen:</strong><br>
+                                <code class="bg-white px-2 py-1 rounded text-moe-primary font-bold">Gewinn = Umsatzerlöse - Aufwendungen</code><br>
+                                <span class="text-sm text-gray-500">(Wobei Aufwendungen alle Kosten umfassen: Personal, Material, Abschreibungen, Zinsen, Steuern und sonstige Aufwendungen)</span></li>
+                            </ul>
+                        </div>
+
+                        <h4>Das fundamentale Knappheitsproblem</h4>
+                        <p>Alle Wirtschaftsakteure stehen vor einem Problem, welches das Wirtschaften überhaupt erst erzwingt: Der <strong>Zielkonflikt</strong> aus:</p>
+                        <ul>
+                            <li><strong>Unbegrenzten Bedürfnissen:</strong> Der grenzenlose Wunsch jedes Patienten nach der bestmöglichen, sofortigen medizinischen Versorgung.</li>
+                            <li><strong>Knappen Ressourcen:</strong> Finanzielle Mittel, Personal (Ärzte, Pfleger), Zeit und materielle Güter.</li>
+                        </ul>
+                        <p>Da nie alle Bedürfnisse befriedigt werden können, zwingt uns dieser Konflikt zu ökonomisch sinnvollen Entscheidungen (die bestmögliche Allokation / Verteilung der knappen Güter).</p>
+                    `
+                },
+                {
+                    id: 'P2', title: '2. Grundlagen der BWL', desc: 'Produktivität, Effizienz, Wirtschaftlichkeitsgebot & Ökonomisches Prinzip.',
+                    content: `
+                        <h3>Allgemeine Grundlagen der Betriebswirtschaftslehre</h3>
+                        
+                        <h4>Betrieb vs. Unternehmen</h4>
+                        <p>In der Umgangssprache oft gleichgesetzt, trennt die BWL diese Begriffe strikt:</p>
+                        <ul>
+                            <li><strong>Der Betrieb:</strong> Ist die <em>technisch-organisatorische Einheit</em>. Hier findet die reine Produktion bzw. Leistungserstellung statt (Ort der Wertschöpfung). Ein Betrieb an sich kennt primär keine Eigentümerinteressen.</li>
+                            <li><strong>Das Unternehmen:</strong> Ist die <em>wirtschaftlich-rechtliche Einheit</em>. Es bildet den rechtlichen Rahmen (z.B. GmbH) und hat als leitende Idee meist das <strong>Gewinnstreben</strong> (Gewinnerzielungsabsicht) sowie das finanzielle Risiko.</li>
+                        </ul>
+
+                        <h4>Effektivität vs. Effizienz</h4>
+                        <p>Zwei der wichtigsten Begriffe im Management, die niemals verwechselt werden dürfen:</p>
+                        <ul>
+                            <li><strong>Effektivität ("Die richtigen Dinge tun"):</strong> Ein Maß für die reine Zielerreichung. Führt eine Maßnahme zum gewünschten Ziel? (Egal, wie teuer es war).</li>
+                            <li><strong>Effizienz ("Die Dinge richtig tun"):</strong> Ein Maß für die Wirtschaftlichkeit. Wird das Ziel mit einem möglichst optimalen (geringen) Ressourceneinsatz erreicht?</li>
+                        </ul>
+
+                        <div class="box-highlight">
+                            <h4>Das Wirtschaftlichkeitsgebot (SGB V) in der GKV</h4>
+                            <p>In der Gesetzlichen Krankenversicherung (GKV) ist die Effizienz sogar gesetzlich in § 12 SGB V verankert: <em>"Die Leistungen müssen ausreichend, zweckmäßig und <strong>wirtschaftlich</strong> sein; sie dürfen das Maß des Notwendigen nicht überschreiten."</em> Dies zwingt Leistungserbringer zu einem ressourcenschonenden Vorgehen.</p>
+                        </div>
+
+                        <h4>Produktivität vs. Wirtschaftlichkeit</h4>
+                        <p>Um den Erfolg zu messen, nutzt die BWL diese zwei völlig unterschiedlichen Kennzahlen:</p>
+                        <ul>
+                            <li><strong>Produktivität (Mengenmäßiges Verhältnis):</strong> <br>
+                            Formel: <code>Ausbringungsmenge (Output) / Einsatzmenge (Input)</code>. Sie wird in physikalischen Einheiten (Stück, Stunden, Kilo) gemessen, NICHT in Geld.
+                                <ul class="pl-4 mt-2 border-l-2 border-moe-accent ml-2">
+                                    <li><em>Arbeitsproduktivität:</em> Produzierte Ausbringungsmenge / Eingesetzte Arbeitsstunden.</li>
+                                    <li><em>Kapitalproduktivität:</em> Produzierte Ausbringungsmenge / Eingesetztes Sachkapital.</li>
+                                </ul>
+                            </li>
+                            <li class="mt-4"><strong>Wirtschaftlichkeit (Wertmäßiges Verhältnis):</strong> <br>
+                            Formel: <code>Ertrag / Aufwand</code> (bzw. Leistungen / Kosten). Hier geht es rein um monetäre Werte (Euro). Ist das Ergebnis größer als 1, erzielt man einen Gewinn.</li>
+                        </ul>
+
+                        <div class="box-info">
+                            <h4>Das Ökonomische Prinzip (Input-Output-Relation)</h4>
+                            <p>Die rationale Leitmaxime jeden Handelns zur Überwindung der Knappheit:</p>
+                            <h5>1. Das Minimalprinzip</h5>
+                            <p>Ein <em>festgelegtes Ziel</em> soll mit dem <em>geringstmöglichen Einsatz</em> erreicht werden. (Beispiel Lisa & Max: Bestelle exakt 7.000 Zulieferteile so günstig wie möglich).</p>
+                            <h5>2. Das Maximalprinzip</h5>
+                            <p>Mit einem <em>festgelegten Einsatz</em> soll das <em>maximal mögliche Ziel</em> erreicht werden. (Beispiel Max: Nutze exakt 50.000 € Budget, um so viele Teile wie möglich zu kaufen).</p>
+                        </div>
+
+                        <h4>Produktionsfaktoren nach Gutenberg</h4>
+                        <p>Um Leistungen zu erstellen, müssen Faktoren kombiniert werden:</p>
+                        <p><strong>1. Originäre Faktoren (Ursprünglich):</strong> Elementarfaktoren (Arbeit, Maschinen, Material) PLUS die Leitung.<br>
+                        <strong>2. Derivative Faktoren (Abgeleitet):</strong> Nur Planung, Organisation und Kontrolle.<br>
+                        <strong>3. Dispositive Faktoren:</strong> Leitung + Planung, Organisation, Kontrolle.</p>
+                    `
+                },
+                {
+                    id: 'P3', title: '3. Gefahrenabwehr als Managementaufgabe', desc: 'Institutionelles vs. Funktionales Management & Krisen.',
+                    content: `
+                        <h3>Die Gefahrenabwehr als Managementaufgabe</h3>
+                        
+                        <h4>Das Spannungsverhältnis: Krise vs. Katastrophe</h4>
+                        <p>Im Management von Notlagen (Behörden, Kliniken, Feuerwehr) besteht ein ständiges Spannungsverhältnis. Die oberste Regel lautet: <strong>Man muss aufpassen, dass man von einer Krise nicht in eine Katastrophe schlittert. Und umgekehrt muss darauf geachtet werden, dass eine akute Katastrophe nicht zu einer permanenten Krise im Unternehmen führt.</strong></p>
+
+                        <h4>Der Managementbegriff</h4>
+                        <p>In der Literatur wird Management aus zwei Perspektiven betrachtet:</p>
+                        
+                        <div class="box-highlight">
+                            <h4>1. Institutionelles Management (Wer führt aus?)</h4>
+                            <p>Umfasst <strong>alle Personen, die in einer Organisation Vorgesetztenfunktionen (Weisungsbefugnis) haben</strong> (z.B. Chefarzt, Pflegedienstleitung, Wachabteilungsleiter). Es ist die formelle Verankerung in der Hierarchie bzw. im Organigramm.</p>
+                        </div>
+                        
+                        <div class="box-info">
+                            <h4>2. Funktionales Management (Was wird getan?)</h4>
+                            <p>Beschreibt den <strong>Komplex von Aufgaben zur Steuerung</strong> des Leistungsprozesses, unabhängig davon, <em>welche</em> Person diese ausführt. Der klassische funktionale Steuerungs-Kreislauf umfasst:</p>
+                            <ul>
+                                <li><strong>Planung:</strong> Gedankliche Vorwegnahme zukünftigen Handelns zur Risikominimierung.</li>
+                                <li><strong>Organisation:</strong> Zuweisung von formellen Strukturen (Wer macht was?).</li>
+                                <li><strong>Führung:</strong> Zielgerichtete Beeinflussung des Verhaltens der Mitarbeiter.</li>
+                                <li><strong>Kontrolle:</strong> Der permanente Soll-Ist-Vergleich. Bei Abweichungen vom Plan muss korrigierend eingegriffen werden.</li>
+                            </ul>
+                        </div>
+                    `
+                },
+                {
+                    id: 'P4', title: '4. Besonderheiten der Gefahrenabwehr', desc: 'Akteure, Philanthropie, öffentliches Recht & DL-Spezifika.',
+                    content: `
+                        <h3>Betriebswirtschaftliche Besonderheiten</h3>
+                        <p>Klassische Industrie-BWL lässt sich nicht 1:1 auf das Gesundheitswesen oder Behörden übertragen.</p>
+                        
+                        <h4>Meritorische Güter & Akteure</h4>
+                        <p>Notarztversorgung oder Katastrophenschutz sind <strong>meritorische Güter</strong> (gesellschaftlich absolut notwendig). Überlässt man sie dem freien Markt, werden sie aus Rentabilitätsgründen oft nicht ausreichend bereitgestellt (z.B. auf dem Land). Es droht <em>Marktversagen</em>, weshalb der Staat eingreift. Wir unterscheiden folgende Akteure in der Gefahrenabwehr:</p>
+                        <ul>
+                            <li><strong>Staatliche Akteure:</strong> Berufsfeuerwehren, Polizei, Rettungszweckverbände.</li>
+                            <li><strong>Gemeinnützige Akteure (NPOs):</strong> DRK, Johanniter, ASB, Freiwillige Feuerwehren.</li>
+                            <li><strong>Private Akteure:</strong> Private Rettungsdienste (z.B. Falck).</li>
+                        </ul>
+
+                        <h4>Besonderheiten von NPOs (z.B. DRK) und staatlichen Akteuren</h4>
+                        <p>NPOs agieren nicht nach dem Prinzip der Gewinnmaximierung. Ihre Besonderheiten sind:</p>
+                        <ul>
+                            <li><strong>Präferenz der Gemeinnützigkeit</strong> und das <strong>Kostendeckungsprinzip</strong> (Schwarze Null reicht aus).</li>
+                            <li><strong>Hohe Bedeutung des Ehrenamtes:</strong> Führung erfordert hier extreme Sinnstiftung, da kein Gehalt gezahlt wird.</li>
+                            <li><strong>Philanthropischer Markt:</strong> NPOs konkurrieren massiv auf dem Spenden- und Ehrenamtsmarkt. <em>Vertrauen und Image</em> sind hier die wichtigste Währung.</li>
+                            <li><strong>Politische Abhängigkeit:</strong> Das Angebot und die Nachfrage in der Gefahrenabwehr sind extrem politisch abhängig (Gesetzgebung, Rettungsdienstgesetze).</li>
+                            <li><strong>Öffentlich-rechtliche Prozesse:</strong> Staatliche Akteure unterliegen der strengen Haushaltsplanung (Kameralistik) und dem Vergaberecht. Dies führt zu langwierigen Prozessen und hemmt die Flexibilität zugunsten von Formvorschriften.</li>
+                        </ul>
+
+                        <div class="box-info">
+                            <h4>Besonderheiten von Dienstleistungen (DL)</h4>
+                            <p>Dienstleistungen haben in der Gefahrenabwehr völlig eigene Gesetze:</p>
+                            <ul>
+                                <li><strong>Intangibles Gut:</strong> DL sind immateriell. Sie können nicht auf Vorrat produziert oder in einem Regal gelagert werden.</li>
+                                <li><strong>Ständige Leistungsbereitschaft:</strong> Der Anbieter muss immer eine Leistungsbereitschaft vorhalten (z.B. besetzter RTW), was hohe <em>Vorhaltekosten</em> verursacht, auch wenn gerade nichts passiert.</li>
+                                <li><strong>Integration des externen Faktors:</strong> Diese Leistungsbereitschaft muss stets mit dem externen Faktor (dem <strong>Konsumenten/Patienten</strong> oder einem brennenden Haus) kombiniert werden. Ohne ihn findet keine "Produktion" statt.</li>
+                                <li><strong>Uno-actu-Prinzip:</strong> Produktion und Konsumtion fallen zeitlich exakt zusammen.</li>
+                                <li><strong>Sicherheitsbetonte Leistungserstellung:</strong> In der Gefahrenabwehr geht um Leben und Tod, Fehlervermeidung hat höchste Priorität.</li>
+                            </ul>
+                            <p class="mt-4"><strong>Spezifika in absoluten Notlagen:</strong> In einem Notfall kommt es zu extremen Marktstörungen. Es herrscht eine massive <em>Informationsasymmetrie</em> (der Arzt hat das absolute Fachwissensmonopol, der Patient ist ahnungslos). Zudem verhindern Lebensgefahr und Zeitdruck jeglichen klassischen Preiswettbewerb oder das Einholen von Zweitmeinungen.</p>
+                        </div>
+                    `
+                },
+                {
+                    id: 'P5', title: '5. Managementinstrumente (5.1 - 5.7)', desc: 'Strategie, Orga, Personal, Beschaffung, Marketing, Finanzierung.',
+                    content: `
+                        <h3>5. Managementinstrumente</h3>
+                        
+                        <div class="box-highlight">
+                            <h4>Unternehmensziele</h4>
+                            <p>Unternehmen verfolgen ein komplexes Zielsystem, das in der BWL wie folgt unterschieden wird:</p>
+                            <ul>
+                                <li><strong>Monetäre Ziele:</strong> Ziele, die sich direkt in Geldgrößen oder Kennzahlen ausdrücken lassen. Beispiele: <em>Gewinnerzielung, Liquidität (Zahlungsfähigkeit!), Rentabilität (Maß der Wirtschaftlichkeit)</em>. Auch <strong>Sicherheit</strong> (Datensicherheit, Sicherheit vor Terror oder Energieausfall) ist oft hier als Existenzsicherungsziel verankert!</li>
+                                <li><strong>Nicht-monetäre Ziele:</strong> Ziele, die sich nicht unmittelbar in Euro messen lassen, aber für den Erfolg essenziell sind. Beispiele: <em>Image, Prestige, Machtausübung, Marktstellung</em>.</li>
+                                <li><strong>Soziale & Ökologische Ziele:</strong> z.B. faire Arbeitsbedingungen, Umweltschutz.</li>
+                            </ul>
+                        </div>
+
+                        <h4>5.1 Strategisches Management & Planung</h4>
+                        <p>Planung ist zeitlich strukturiert: <strong>Strategisch</strong> (langfristig, >5 Jahre, global/grob), <strong>Taktisch</strong> (mittelfristig), <strong>Operativ</strong> (kurzfristig, <1 Jahr, sehr detailliert wie Dienstpläne).</p>
+                        <p><strong>Umweltanalyse:</strong><br>
+                        - <em>Mikroumfeld:</em> Direkte Branche, analysiert durch <strong>Porter's Five Forces</strong> (1. Neue Anbieter, 2. Rivalität, 3. Substitute (Ersatzprodukte), 4. Lieferantenmacht, 5. Abnehmermacht). <em>(Achtung: Shareholder gehören NICHT dazu!)</em><br>
+                        - <em>Makroumfeld:</em> Globale Trends (Politik, Technologie). Fließt als Chancen/Risiken (O & T) in die <strong>SWOT-Analyse</strong> ein. <br>
+                        <em>Beispiel S-O-Strategie:</em> Die vorhandenen Stärken nutzen, um die Gelegenheiten (Chancen) auszunutzen!</p>
+                        <p><strong>BCG Portfolio-Matrix:</strong> Achsen sind Marktwachstum (Y) und relativer Marktanteil (X). </p>
+
+                        <h4>5.2 Organisation & Rechtsformen</h4>
+                        <p><strong>Aufbauorganisation:</strong> Wer macht was? (Struktur/Organigramm).<br>
+                        <strong>Ablauforganisation:</strong> Wann und wo passiert was? (Prozesse).</p>
+                        <table class="academic-table">
+                            <tr>
+                                <th>Rechtsform</th>
+                                <th>Gründerzahl</th>
+                                <th>Haftung</th>
+                                <th>Startkapital</th>
+                            </tr>
+                            <tr>
+                                <td><strong>Einzelunternehmen</strong></td>
+                                <td>1 Person</td>
+                                <td>Voll persönlich & unbeschränkt</td>
+                                <td>Kein Minimum</td>
+                            </tr>
+                            <tr>
+                                <td><strong>GbR / OHG</strong> (Personengesellschaften)</td>
+                                <td>Mind. 2 Personen</td>
+                                <td>Gemeinsam, voll persönlich & unbeschränkt</td>
+                                <td>Kein Minimum</td>
+                            </tr>
+                            <tr>
+                                <td><strong>GmbH / AG</strong> (Kapitalgesellschaften)</td>
+                                <td>1 oder mehr</td>
+                                <td>Beschränkt auf das Gesellschaftsvermögen (Haftungsschild)</td>
+                                <td>Zwingend erforderlich (z.B. 25.000€ bei GmbH)</td>
+                            </tr>
+                        </table>
+
+                        <h4>5.3 Personal & Führung</h4>
+                        <p>Grid-Modell (Blake/Mouton) misst Führungsstile anhand von <strong>Sachorientierung (X)</strong> und <strong>Personenorientierung (Y)</strong>. (z.B. 9/1 = Befehl-Gehorsam, diktatorisch).</p>
+
+                        <h4>5.4 Beschaffung & Materialwirtschaft</h4>
+                        <p>Entscheidung über <em>Make-or-Buy</em> (Selber machen oder Fremdbezug).</p>
+                        <p><strong>ABC-Analyse:</strong> Klassifiziert Materialien nach ihrem Wert-Mengen-Verhältnis. <em>A-Güter</em> machen nur ca. 15% der Verbrauchsmenge aus, binden aber rund 80% des Kapitalwertes! <em>C-Güter</em> hingegen machen ca. 50% der Menge, aber nur 5% des Wertes aus.</p>
+                        <p><strong>XYZ-Analyse:</strong> Klassifiziert nach der Vorhersagbarkeit des Verbrauchs. <em>X-Güter</em> = konstanter, gut planbarer Verbrauch. <em>Y-Güter</em> = schwankender (saisonaler) Verbrauch. <em>Z-Güter</em> = völlig unregelmäßiger, chaotischer Verbrauch.</p>
+                        <div class="box-info">
+                            <strong>Kombination zur Versorgungsstrategie:</strong><br>
+                            Führt man beide Analysen zusammen, ergeben sich klare Handlungsempfehlungen:<br>
+                            <ul>
+                                <li><strong>XA-Güter (Hoher Wert, konstanter Verbrauch):</strong> Hier lohnt sich hoher Planungsaufwand! Strategie: <em>Bedarfsgerechte Beschaffung (Just-in-Time)</em>. Keine großen Lagerbestände aufbauen, um Kapitalbindung zu minimieren.</li>
+                                <li><strong>CZ-Güter (Geringer Wert, chaotischer Bedarf):</strong> Ein hoher Planungsaufwand wäre hier reine Geldverschwendung. Strategie: <em>Fallweise Beschaffung</em> (erst kaufen, wenn es akut gebraucht wird) oder <em>Vorratsbeschaffung</em>, um nicht ständig neu bestellen zu müssen.</li>
+                            </ul>
+                        </div>
+
+                        <h4>5.5 Marketing</h4>
+                        <p>Der Marketing-Mix besteht aus den <strong>4 P's</strong>: Product, Price, Place, Promotion.</p>
+
+                        <div class="box-info">
+                            <h4>5.6 / 5.7 Finanzierung, Investition & Controlling</h4>
+                            <p>Investitionsrechenverfahren bewerten die Wirtschaftlichkeit einer Investition. Man unterscheidet streng:</p>
+                            <ul>
+                                <li><strong>Statische Verfahren:</strong> Rechnen stark vereinfacht mit Durchschnittswerten einer Periode (ohne Zinseszins). Dazu gehören: <em>Kostenvergleichsrechnung, Gewinnvergleichsrechnung, Rentabilitätsrechnung, Amortisationsrechnung</em>.</li>
+                                <li><strong>Dynamische Verfahren:</strong> Berücksichtigen den exakten zeitlichen Anfall von Zahlungen (mit Abzinsung). Dazu gehören: <em>Kapitalwertmethode, Interne Zinsfußmethode</em>.</li>
+                            </ul>
+                        </div>
+                    `
+                }
+            ],
+            flashcards: [
+                { front: 'Transferaufgabe (Klausur)', back: 'Praktische Anwendung der Theorie.\n\nBeispiel: "Beschreiben Sie die Möglichkeiten und Grenzen des wirtschaftlichen Handelns in der Gefahrenabwehr an einem praktischen Beispiel!"' },
+                { front: 'Umsatz (Formel)', back: 'Absatzmenge × Preis' },
+                { front: 'Gewinn (Formel)', back: 'Umsatzerlöse abzüglich aller Aufwendungen (Personal, Material, Abschreibungen, Zinsen, Steuern)' },
+                { front: 'Effektivität vs. Effizienz', back: 'Effektivität: Zielerreichung (Die richtigen Dinge tun). Effizienz: Wirtschaftlichkeit (Die Dinge richtig tun).' },
+                { front: 'Wirtschaftlichkeitsgebot (GKV)', back: '§12 SGB V: Leistungen müssen ausreichend, zweckmäßig und wirtschaftlich sein; sie dürfen das Maß des Notwendigen nicht überschreiten.' },
+                { front: 'Produktivität vs. Wirtschaftlichkeit', back: 'Produktivität = Output / Input (Mengenmäßig). Wirtschaftlichkeit = Ertrag / Aufwand (Wertmäßig, in Euro).' },
+                { front: 'Arbeitsproduktivität (Formel)', back: 'Ausbringungsmenge geteilt durch eingesetzte Arbeitsstunden.' },
+                { front: 'Kapitalproduktivität (Formel)', back: 'Ausbringungsmenge geteilt durch eingesetztes Sachkapital.' },
+                { front: 'Originäre Produktionsfaktoren', back: 'Die "Basis": Elementarfaktoren (Arbeit, Maschine, Material) PLUS die Unternehmensleitung!' },
+                { front: 'Derivative Produktionsfaktoren', back: 'Die "abgeleiteten" Faktoren: Nur Planung, Organisation und Kontrolle.' },
+                { front: 'Dispositive Faktoren', back: 'Die Leitung (originär) + Planung, Organisation, Kontrolle (derivativ).' },
+                { front: 'Spannungsverhältnis: Krise vs. Katastrophe', back: 'Eine Krise darf nicht zur Katastrophe werden. Eine externe Katastrophe darf nicht zur permanenten Unternehmenskrise führen.' },
+                { front: 'Dienstleistung: Intangibilität', back: 'DL sind ein intangibles (immaterielles) Gut, nicht greifbar und nicht auf Vorrat lagerfähig.' },
+                { front: 'Dienstleistung: Leistungsbereitschaft', back: 'Anbieter muss Leistung ständig vorhalten (Vorhaltekosten), auch wenn kein Kunde da ist.' },
+                { front: 'Dienstleistung: Externer Faktor', back: 'Zur Leistungserstellung muss der Konsument (Patient) zwingend integriert werden.' },
+                { front: 'Monetäre Ziele (Beispiele)', back: 'Liquidität (Zahlungsfähigkeit), Rentabilität, Gewinn, Umsatz, Sicherheit.' },
+                { front: 'Nicht-monetäre Ziele (Beispiele)', back: 'Macht, Prestige, Image, Marktstellung.' },
+                { front: 'S-O-Strategie (SWOT)', back: 'Die vorhandenen Stärken (Strengths) nutzen, um die Gelegenheiten/Chancen (Opportunities) auszunutzen.' },
+                { front: 'Aufbau- vs. Ablauforganisation', back: 'Aufbau: Wer macht was? (Struktur/Organigramm). Ablauf: Wann und wo geschieht etwas? (Prozesse).' },
+                { front: 'Personengesellschaften (Beispiele)', back: 'GbR, OHG, KG. Gesellschafter haften meist voll, unbeschränkt und mit Privatvermögen.' },
+                { front: 'Kapitalgesellschaften (Beispiele)', back: 'GmbH, UG, AG. Hauptmerkmal: Haftungsbeschränkung auf das Gesellschaftsvermögen. Stammkapital nötig.' },
+                { front: 'ABC-Analyse', back: 'Klassifiziert Material nach Wert/Menge. A-Güter: Nur ca. 15% der Menge, binden aber ~80% des Kapital-Wertes!' },
+                { front: 'XYZ-Analyse', back: 'Klassifiziert nach Vorhersagbarkeit. X = konstanter Verbrauch, Y = Trend/Saisonal, Z = völlig unregelmäßig/chaotisch.' },
+                { front: 'Beschaffungsstrategie XA-Güter', back: 'Bedarfsorientierte Beschaffung (Just-in-Time). Hoher Wert = wenig lagern; Konstanter Verbrauch = perfekt planbar.' },
+                { front: 'Beschaffungsstrategie CZ-Güter', back: 'Fallweise Beschaffung oder Vorratsbeschaffung. Aufwendige Planung lohnt sich beim geringen Wert nicht.' },
+                { front: 'Marketing-Mix (4 P\'s)', back: 'Product (Produkt), Price (Preis), Place (Vertrieb), Promotion (Kommunikation).' },
+                { front: 'Statische Investitionsrechenverfahren', back: 'Rechnen mit Durchschnittswerten ohne Zinseszins: Kostenvergleich, Gewinnvergleich, Rentabilität, Amortisation.' },
+                { front: 'Dynamische Investitionsrechenverfahren', back: 'Berücksichtigen den zeitlichen Anfall von Zahlungen (mit Abzinsung): z.B. Kapitalwertmethode.' },
+                { front: 'Porter\'s Five Forces', back: '1. Neue Anbieter, 2. Rivalität, 3. Substitute, 4. Lieferanten, 5. Abnehmer. (Shareholder gehören NICHT dazu!).' },
+                { front: 'Social Entrepreneurship', back: 'Unternehmerisches Handeln, das primär auf die Lösung gesellschaftlicher/sozialer Probleme ausgerichtet ist (nicht rein auf Profitmaximierung).' },
+                { front: 'Zielkonflikt des Wirtschaftens', back: 'Unbegrenzte menschliche Bedürfnisse vs. streng knappe Güter/Ressourcen.' },
+                { front: 'VWL vs. BWL', back: 'VWL: Makro-Ebene (gesamte Wirtschaft). BWL: Mikro-Ebene (das einzelne Unternehmen und seine internen Prozesse).' },
+                { front: 'Betrieb vs. Unternehmen', back: 'Betrieb: Technisch-organisatorische Einheit (Produktion). Unternehmen: Wirtschaftlich-rechtliche Einheit (oft mit Gewinnerzielungsabsicht).' },
+                { front: 'Minimalprinzip', back: 'Ein gegebenes (fixes) Ziel soll mit minimalen Mitteln erreicht werden.' },
+                { front: 'Maximalprinzip', back: 'Mit gegebenen (fixen) Mitteln soll ein maximales Ziel erreicht werden.' },
+                { front: 'Institutionelles Management', back: 'Betrachtet die Personen mit Vorgesetztenfunktion (das Organigramm / die Hierarchie).' },
+                { front: 'Funktionales Management', back: 'Betrachtet die Aufgaben der Steuerung: Zielsetzung, Planung, Organisation, Führung, Kontrolle (Z-P-O-F-K).' },
+                { front: 'Meritorische Güter', back: 'Gesellschaftlich notwendige Güter (z.B. Notarzt), bei denen der freie Markt oft versagt, weil sie unrentabel sind. Der Staat greift ein.' },
+                { front: 'Kostendeckungsprinzip', back: 'Häufiges finanzielles Ziel von Non-Profit-Organisationen (NPOs) anstelle von Profitmaximierung ("Schwarze Null").' },
+                { front: 'Philanthropischer Markt', back: 'Markt, auf dem NPOs um Spenden und Ehrenamtliche konkurrieren. Währung = Image/Vertrauen.' },
+                { front: 'Folgen öffentlich-rechtlicher Prozesse', back: 'Kameralistik und strenges Vergaberecht führen zu langwierigen Entscheidungen und Fokus auf Formalien statt auf reine Effizienz.' },
+                { front: 'Dienstleistung: Uno-actu-Prinzip', back: 'Produktion und Konsumtion der Leistung fallen zeitlich und örtlich exakt zusammen.' },
+                { front: 'Besonderheit in Notlagen (Markt)', back: 'Extreme Informationsasymmetrie (Arzt weiß alles, Patient nichts) und Zeitdruck verhindern jeden Preiswettbewerb.' },
+                { front: 'Strategische Planung', back: 'Langfristig (> 5 Jahre), globale Ausrichtung, sehr geringer Detaillierungsgrad.' },
+                { front: 'Operative Planung', back: 'Kurzfristig (< 1 Jahr), z.B. Dienstpläne, sehr hoher Detaillierungsgrad.' },
+                { front: 'Mikroumfeld vs. Makroumfeld', back: 'Mikro = Direkte Branche (Porter). Makro = Globale Umwelt, Politik, Trends (SWOT Chancen/Risiken).' },
+                { front: 'SWOT-Analyse', back: 'Strengths (Stärken), Weaknesses (Schwächen) - Intern & Opportunities (Chancen), Threats (Risiken) - Extern.' },
+                { front: 'W-T-Strategie (SWOT)', back: 'Worst Case. Eigene Schwächen treffen auf Marktrisiken. Abbau-/Verteidigungsstrategie ist zwingend nötig.' },
+                { front: 'BCG-Matrix: Achsen', back: 'Y-Achse = Marktwachstum. X-Achse = Relativer Marktanteil.' },
+                { front: 'BCG: Cash Cows', back: 'Niedriges Marktwachstum, hoher relativer Marktanteil. Normstrategie: Abschöpfung (Geld ernten).' },
+                { front: 'BCG: Poor Dogs', back: 'Niedriges Marktwachstum, niedriger relativer Marktanteil. Normstrategie: Desinvestition / Liquidieren.' },
+                { front: 'BCG: Stars & Question Marks', back: 'Stars: Hoch/Hoch (Investieren). Question Marks: Hohes Wachstum / Niedriger Anteil (Selektion).' },
+                { front: 'Kritik an der BCG-Matrix', back: 'Reine Ist-Betrachtung (Foto, kein Film), bildet keine zeitliche Dynamik ab und reduziert Komplexität auf nur 2 Faktoren.' },
+                { front: 'Grid-Modell (Blake/Mouton)', back: 'Ein Führungsverhaltensgitter. Misst auf der X-Achse die Sachorientierung (Output) und auf der Y-Achse die Personenorientierung.' },
+                { front: 'Grid 9/1 (Befehl-Gehorsam)', back: 'Maximaler Fokus auf Output (9), minimaler Fokus auf Menschen (1). Diktatorischer Führungsstil.' },
+                { front: 'Grid 1/9 (Glacéhandschuh)', back: 'Maximaler Fokus auf Menschen (9), minimal auf Output (1). Fokus auf Harmonie und Wohlfühlatmosphäre.' },
+                { front: 'Grid 9/9 (Team-Management)', back: 'Hohe Sach- und Personenorientierung. Das theoretische Idealbild.' }
+            ],
+            questions: [
+                // --- P0: EINFÜHRUNG (4 Fragen) ---
+                { id: 'q0_1', cat: 'P0', q: "Welches ist ein typisches Szenario für eine Transferaufgabe in der Klausur?", o: ["Reines Aufzählen von Fachbegriffen", "Das exakte Auswendiglernen von Jahreszahlen", "Beschreiben der Möglichkeiten und Grenzen wirtschaftlichen Handelns in der Gefahrenabwehr an einem praktischen Beispiel", "Ausschließlich Multiple-Choice-Kreuzchen setzen"], c: 2, expl: "Transferaufgaben verlangen, dass man die gelernte Theorie auf ein konkretes, praktisches Beispiel aus dem Gesundheitswesen anwendet.", memo: "Theorie auf Praxisbeispiel anwenden." },
+                { id: 'q0_2', cat: 'P0', q: "Was bedeutet 'Social Entrepreneurship' im Kontext der Modulziele?", o: ["Unternehmerisches Handeln, das primär zur Lösung sozialer Probleme genutzt wird", "Das reine Sammeln von Spendengeldern durch ehrenamtliche Mitarbeiter unter Verzicht auf jegliche betriebswirtschaftliche Struktur", "Ein rein kapitalistischer Ansatz, der ausschließlich auf die Maximierung der Aktionärsrenditen im Pflegesektor abzielt", "Die alleinige Organisation von karitativen Feiern ohne wirtschaftliche Absicht"], c: 0, isStar: true, expl: "Achtung: Die kurze Antwort ist richtig! Es verbindet Unternehmertum mit gesellschaftlichem Mehrwert.", memo: "Sozial + Unternehmer." },
+                { id: 'q0_3', cat: 'P0', q: "Die methodische Erstellung wovon soll laut den Modulzielen am Ende des Kurses beschrieben werden können?", o: ["Dienstplänen für die Pflege", "Businessplänen", "Operativen Notfallplänen der Feuerwehr", "Jahresabschlüssen nach HGB"], c: 1, expl: "Die Erstellung von Businessplänen ist ein explizites Lernziel.", memo: "Der Plan fürs Business." },
+                { id: 'q0_4', cat: 'P0', q: "Was bedeutet es, eine 'Transferaufgabe' in der Prüfung zu lösen?", o: ["Texte 1:1 aus dem Skript auswendig aufschreiben", "Gelerntes theoretisches Wissen auf neue, unbekannte Praxis-Sachverhalte anwenden", "Einen medizinischen Text ins Englische übersetzen", "Ausschließlich Multiple-Choice Fragen durch Ausschlussverfahren beantworten"], c: 1, isStar: true, expl: "Transfer verlangt echtes Verstehen statt nur Auswendiglernen.", memo: "Wissen anwenden = Transfer." },
+
+                // --- P1: THEMATIK & FORMELN (7 Fragen) ---
+                { id: 'q1_1', cat: 'P1', q: "Wie berechnet sich der Gewinn eines Unternehmens in der BWL grundlegend?", o: ["Umsatzerlöse abzüglich aller Aufwendungen (Personal, Material, Abschreibungen, Zinsen etc.)", "Menge mal Preis", "Das Anlagevermögen geteilt durch das Umlaufvermögen unter Berücksichtigung der aktuellen Inflationsrate", "Die Summe aller produzierten Güter multipliziert mit dem aktuellen Marktpreis abzüglich der reinen Fixkosten"], c: 0, isStar: true, expl: "Lass dich von Antwort 4 nicht blenden! Gewinn ist einfach Umsatz minus alle Kosten/Aufwendungen.", memo: "Gewinn = Umsatz minus Kosten." },
+                { id: 'q1_2', cat: 'P1', q: "Wie lautet die absolut grundlegende betriebswirtschaftliche Formel für den Umsatz?", o: ["Gewinn plus Steuern", "Menge geteilt durch Arbeitsstunden multipliziert mit der Maschinenlaufzeit", "Absatzmenge × Preis", "Ertrag geteilt durch den periodengerechten Aufwand"], c: 2, expl: "Ganz simpel: Wie viele Stücke habe ich zu welchem Preis verkauft?", memo: "Menge mal Preis." },
+                { id: 'q1_3', cat: 'P1', q: "Warum müssen Organisationen und Unternehmen überhaupt wirtschaften?", o: ["Weil der Gesetzgeber es für die Bilanzierung und das Finanzamt zwingend vorschreibt", "Weil es schon immer so gemacht wurde", "Um den permanenten Zielkonflikt zwischen unbegrenzten Bedürfnissen und knappen Gütern zu bewältigen", "Aus reiner, kapitalistischer Profitgier der Shareholder"], c: 2, isStar: true, expl: "Die absolute Knappheit der Ressourcen erzwingt Rationalität.", memo: "Knappheit zwingt zum Wirtschaften." },
+                { id: 'q1_4', cat: 'P1', q: "Was bezeichnet man in der BWL als den fundamentalen Zielkonflikt?", o: ["Produktion vs. Marketing", "Chef vs. Betriebsrat", "Staatliche Regulierung vs. freier Markt", "Knappe Ressourcen vs. unbegrenzte menschliche Bedürfnisse"], c: 3, expl: "Menschen wollen alles und sofort, die Ressourcen (Geld, Ärzte) sind aber limitiert.", memo: "Wollen viel, haben wenig." },
+                { id: 'q1_5', cat: 'P1', q: "Bedeutet Wirtschaften zwingend immer 'Profitmaximierung'?", o: ["Ja, das ist das einzige und absolute Ziel der Betriebswirtschaftslehre.", "Nein, es bedeutet im Kern den planvollen, rationalen Umgang mit knappen Ressourcen.", "Ja, außer in öffentlichen Krankenhäusern der Maximalversorgung, die dem Staat gehören.", "Nein, Wirtschaften bedeutet ausschließlich die physische Produktion von Gütern."], c: 1, expl: "Wirtschaften heißt Knappheit managen, nicht zwingend finanziellen Profit machen (siehe DRK oder Feuerwehr).", memo: "Rational, nicht zwingend Profit." },
+                { id: 'q1_6', cat: 'P1', q: "Was ist ein klassisches Beispiel für 'unbegrenzte Bedürfnisse' im Gesundheitswesen?", o: ["Die begrenzte Anzahl an Notärzten in einer Region", "Ein festes, vom Landtag verabschiedetes staatliches Budget für die Pflege", "Die strengen Regularien der Gesetzlichen Krankenkassen (GKV)", "Der Wunsch jedes Patienten nach der bestmöglichen, sofortigen Therapie ohne Wartezeit"], c: 3, expl: "Bedürfnisse sind Wünsche nach Mangelbeseitigung, die prinzipiell kein Limit kennen.", memo: "Bedürfnis = Grenzenloser Wunsch." },
+                { id: 'q1_7', cat: 'P1', q: "Ist das volkswirtschaftliche Problem der Güterknappheit in absehbarer Zukunft vollständig lösbar?", o: ["Ja, durch das Drucken von unendlich viel Geld", "Nein, es ist ein permanenter Zustand, da die menschlichen Bedürfnisse technologisch stetig mitwachsen", "Ja, durch weltweiten ethischen Verzicht aller Konsumenten", "Ja, durch fortschrittliche künstliche Intelligenz und Automatisierung"], c: 1, expl: "Da Bedürfnisse (z.B. neue teure Therapien) immer weiter wachsen, bleibt Knappheit ewig bestehen.", memo: "Knappheit ist ewig." },
+
+                // --- P2: GRUNDLAGEN (GUTENBERG, PRODUKTIVITÄT, PRINZIPIEN) (17 Fragen) ---
+                { id: 'q2_1', cat: 'P2', q: "Welche wirtschaftswissenschaftliche Disziplin befasst sich primär mit gesamtwirtschaftlichen Zusammenhängen (z.B. Inflation)?", o: ["Betriebswirtschaftslehre (BWL)", "Volkswirtschaftslehre (VWL)", "Soziologie", "Controlling"], c: 1, expl: "Die VWL nimmt die Makro-Perspektive der Wirtschaft ein.", memo: "VWL = Vogelperspektive." },
+                { id: 'q2_2', cat: 'P2', q: "Wie unterscheidet die BWL streng zwischen den Begriffen 'Betrieb' und 'Unternehmen'?", o: ["Das Unternehmen ist die rechtlich-wirtschaftliche Einheit (Gewinnstreben), der Betrieb ist der Ort der technisch-organisatorischen Leistungserstellung", "Ein Unternehmen existiert nur in der Industrie, ein Betrieb ist immer ein kleines Handwerksunternehmen", "Es gibt keinen Unterschied, beide Begriffe sind synonym", "Der Betrieb gehört dem Staat, das Unternehmen ist privat"], c: 0, isStar: true, expl: "Der Betrieb baut das Auto, das Unternehmen haftet dafür und will Gewinn machen.", memo: "Betrieb = Technik. Unternehmen = Recht." },
+                { id: 'q2_3', cat: 'P2', q: "Was beschreibt den Unterschied zwischen Effektivität und Effizienz am besten?", o: ["Effektivität ist die Kostensenkung, Effizienz ist die reine Zieldefinition", "Es gibt in der Managementlehre keinen Unterschied zwischen diesen beiden Kennzahlen", "Effektivität heißt 'die richtigen Dinge tun' (Zielerreichung), während Effizienz 'die Dinge richtig tun' (wirtschaftlicher Ressourceneinsatz) bedeutet", "Effizienz misst das Eigenkapital"], c: 2, isStar: true, expl: "Ein Hammer ist sehr effektiv, um eine Fliege zu töten (Fliege tot), aber absolut ineffizient (Tisch kaputt).", memo: "Effektiv = Ziel erreicht. Effizient = Weg optimal." },
+                { id: 'q2_4', cat: 'P2', q: "Was besagt das 'Wirtschaftlichkeitsgebot' im SGB V für die GKV?", o: ["Jeder Patient muss komplett in Vorkasse treten", "Leistungen müssen ausreichend, zweckmäßig und wirtschaftlich sein und dürfen das Maß des Notwendigen nicht überschreiten", "Krankenhäuser müssen 5% Rendite erwirtschaften", "Ärzte dürfen nur noch Generika verschreiben"], c: 1, isStar: true, expl: "Gesetzlicher Zwang zur Effizienz im Umgang mit den Beitragsgeldern.", memo: "Ausreichend, zweckmäßig, wirtschaftlich." },
+                { id: 'q2_5', cat: 'P2', q: "Wie ist 'Produktivität' in der Betriebswirtschaftslehre exakt definiert?", o: ["Als wertmäßiges Verhältnis von Ertrag geteilt durch Aufwand in Euro", "Als die absolute Gewinnmarge eines Unternehmens", "Umsatz abzüglich aller Steuern", "Als mengenmäßiges Verhältnis von Ausbringungsmenge (Output) geteilt durch Einsatzmenge (Input)"], c: 3, expl: "Produktivität rechnet in Stück oder Stunden, niemals in Euro!", memo: "Menge durch Menge." },
+                { id: 'q2_6', cat: 'P2', q: "Wie berechnet man speziell die 'Arbeitsproduktivität'?", o: ["Ertrag geteilt durch die Lohnkosten", "Ausbringungsmenge geteilt durch die eingesetzten Arbeitsstunden", "Gewinn geteilt durch Mitarbeiterzahl", "Das ist eine volkswirtschaftliche Kennzahl ohne Formel"], c: 1, expl: "Beispiel: 100 operierte Patienten / 50 Arzt-Stunden.", memo: "Stück pro Stunde." },
+                { id: 'q2_7', cat: 'P2', q: "Und wie lautet die Formel für die 'Kapitalproduktivität'?", o: ["Gewinn durch Umsatz", "Ausbringungsmenge geteilt durch den eingesetzten Sachkapital-Bestand", "Eigenkapital durch Fremdkapital", "Umsatz durch Anlagevermögen"], c: 1, expl: "Wieder Mengen-Output geteilt durch das eingesetzte Kapital.", memo: "Menge durch Sachkapital." },
+                { id: 'q2_8', cat: 'P2', q: "Wie wird die 'Wirtschaftlichkeit' im Gegensatz zur Produktivität berechnet?", o: ["Arbeitsstunden geteilt durch Stückzahl", "Als wertmäßiges Verhältnis: Ertrag geteilt durch Aufwand (Geldwerte)", "Gewinn mal Umsatz", "Rohstoffeinsatz geteilt durch produzierte Menge"], c: 1, expl: "Wirtschaftlichkeit rechnet in Geldwerten (Euro).", memo: "Geld durch Geld." },
+                { id: 'q2_9', cat: 'P2', q: "Was sind 'originäre' Produktionsfaktoren nach Gutenberg?", o: ["Das Management eines Konzerns", "Menschliche ausführende Arbeit, Betriebsmittel und Werkstoffe PLUS die Leitung", "Nur Patente", "Externe Berater"], c: 1, isStar: true, expl: "Achtung Klausurfalle: Originär = Elementarfaktoren + Leitung!", memo: "Basis = Arbeit, Maschine, Material + Leitung." },
+                { id: 'q2_10', cat: 'P2', q: "Wer oder was ist der 'derivative' (abgeleitete) Produktionsfaktor?", o: ["Das verkaufte Endprodukt", "Die Rohstoffe", "Nur die Planung, Organisation und Kontrolle", "Der Betriebsrat"], c: 2, expl: "Die P-O-K Funktionen sind von der Leitung 'abgeleitet', weil es ohne die Leitung nichts zu steuern gäbe.", memo: "Derivate = Abgeleitet = P-O-K." },
+                { id: 'q2_11', cat: 'P2', q: "Was besagt das Minimalprinzip?", o: ["Ein gegebenes Ziel mit minimalen Mitteln erreichen", "Maximales Ziel mit minimalen Mitteln", "Minimales Ziel mit gegebenen Mitteln", "Kein Ziel erreichen"], c: 0, expl: "Fixes Ziel, der Einsatz (Input) soll minimiert werden.", memo: "Ziel fix -> Einsatz minimal." },
+                { id: 'q2_12', cat: 'P2', q: "Was besagt das Maximalprinzip?", o: ["Minimales Ziel mit maximalen Mitteln", "Mit gegebenen Mitteln ein maximales Ziel erreichen", "Gegebenes Ziel mit maximalen Mitteln", "Maximaler Gewinn"], c: 1, expl: "Fixer Einsatz (Input), der Output (Ziel) soll maximiert werden.", memo: "Einsatz fix -> Output maximal." },
+                { id: 'q2_13', cat: 'P2', q: "Lisa beauftragt Max, exakt 7.000 Teile zu kaufen und dabei so wenig Geld wie möglich auszugeben. Welches Prinzip kommt hier zur Anwendung?", o: ["Maximalprinzip", "Minimalprinzip", "Gewinnprinzip", "Optimalprinzip"], c: 1, isStar: true, expl: "7.000 = Fixes Ziel. Wenig Geld = Minimale Mittel.", memo: "Ziel 7000 ist fix = Minimalprinzip." },
+                { id: 'q2_14', cat: 'P2', q: "Die Geschäftsführung gibt Max ein festes Budget von 50.000 € und bittet ihn, dafür so viele Teile wie möglich einzukaufen. Welches Prinzip?", o: ["Minimalprinzip", "Maximalprinzip", "Sparprinzip", "VWL-Prinzip"], c: 1, isStar: true, expl: "50.000€ = Fixe Mittel. So viele Teile wie möglich = Maximales Ziel.", memo: "Mittel 50k fix = Maximalprinzip." },
+                { id: 'q2_15', cat: 'P2', q: "Ist das 'Maximalprinzip' identisch mit dem Konzept der 'Gewinnmaximierung'?", o: ["Ja, das ist exakt dasselbe", "Nein, das Maximalprinzip beschreibt das methodische WIE (Mittel-Ziel-Relation), Gewinnmaximierung ist ein inhaltliches Ziel (WAS)", "Ja, beides spart immer Kosten", "Nein, Gewinnmaximierung ist VWL"], c: 1, isStar: true, expl: "Ein maximaler Gewinn kann auch durch das Minimalprinzip erreicht werden.", memo: "Prinzip = Wie. Ziel = Was." },
+                { id: 'q2_16', cat: 'P2', q: "Kann man rein logisch ein 'maximales Ziel' mit 'minimalen Mitteln' erreichen?", o: ["Ja, das ist das berühmte Optimalprinzip", "Nein, das ist mathematisch unmöglich (eine Seite muss fixiert sein)", "Ja, durch gute Führung", "Ja, in NPOs"], c: 1, isStar: true, expl: "Man kann nicht beide Variablen gleichzeitig extrem optimieren.", memo: "Beides extrem geht nicht." },
+                { id: 'q2_17', cat: 'P2', q: "Ein anderer Begriff für das 'ökonomische Prinzip' ist...", o: ["Input-Output-Relation", "Marktprinzip", "Shareholder-Prinzip", "Rentabilitätsprinzip"], c: 0, expl: "Es beschreibt das Verhältnis von eingesetzten Mitteln zum Ergebnis.", memo: "Input vs. Output." },
+
+                // --- P3: MANAGEMENTAUFGABE (7 Fragen) ---
+                { id: 'q3_1', cat: 'P3', q: "Welche Aussage beschreibt das 'institutionelle Management' korrekt?", o: ["Es beschreibt die Aufgaben des Managements", "Es umfasst alle Personen mit Weisungsbefugnis/Vorgesetztenfunktion in einer Organisation", "Es bezieht sich nur auf den CEO", "Es meint externe Berater"], c: 1, expl: "Institutionell = Die Personen in der Hierarchie.", memo: "Institutionell = WER führt." },
+                { id: 'q3_2', cat: 'P3', q: "Welche Funktion gehört NICHT zum klassischen funktionalen Managementkreislauf?", o: ["Planung", "Organisation", "Aktienhandel", "Kontrolle"], c: 2, expl: "Der Kreislauf ist: Planung -> Organisation -> Führung -> Kontrolle.", memo: "P-O-F-K, kein Aktienhandel." },
+                { id: 'q3_3', cat: 'P3', q: "Was versteht man unter 'funktionalem Management'?", o: ["Die Hierarchieebene im Organigramm", "Den Komplex von Steuerungsaufgaben (Planung, Organisation, Führung, Kontrolle)", "Die technische IT-Infrastruktur", "Das Facility Management"], c: 1, isStar: true, expl: "Funktional = WAS wird getan, unabhängig davon, WER es tut.", memo: "Funktional = WAS wird gesteuert." },
+                { id: 'q3_4', cat: 'P3', q: "Warum ist das Spannungsverhältnis zwischen Krise und Katastrophe für Manager so zentral?", o: ["Weil es den Aktienkurs beeinflusst", "Weil eine Krise nicht zur Katastrophe werden darf und eine Katastrophe nicht zur permanenten Unternehmenskrise führen soll", "Es ist nur für Versicherungen relevant", "Es betrifft nur die Feuerwehr"], c: 1, isStar: true, expl: "Beides kann ineinander übergehen, wenn das Management versagt.", memo: "Krise ↔ Katastrophe: Beides verhindern!" },
+                { id: 'q3_5', cat: 'P3', q: "Was ist die zentrale Aufgabe der 'Kontrolle' im funktionalen Managementkreislauf?", o: ["Mitarbeiter überwachen", "Der permanente Soll-Ist-Vergleich und korrigierendes Eingreifen bei Abweichungen", "Steuern berechnen", "Gehälter prüfen"], c: 1, expl: "Kontrolle schließt den Kreislauf: Weicht die Realität vom Plan ab?", memo: "Soll vs. Ist." },
+                { id: 'q3_6', cat: 'P3', q: "Welche Managementperspektive betrachtet primär das Organigramm eines Unternehmens?", o: ["Funktionales Management", "Operatives Management", "Institutionelles Management", "Strategisches Management"], c: 2, expl: "Das Organigramm zeigt, wer welche Position hat = institutionelle Sicht.", memo: "Organigramm = Institutionell." },
+                { id: 'q3_7', cat: 'P3', q: "Im Kontext der Gefahrenabwehr: Was bedeutet 'Planung' als Managementfunktion?", o: ["Das spontane Reagieren auf Notfälle", "Die gedankliche Vorwegnahme zukünftigen Handelns zur Risikominimierung", "Die nachträgliche Dokumentation eines Einsatzes", "Das Erstellen von Rechnungen"], c: 1, expl: "Planung ist immer zukunftsorientiert.", memo: "Planung = Vorher denken." },
+
+                // --- P4: BESONDERHEITEN (12 Fragen) ---
+                { id: 'q4_1', cat: 'P4', q: "Was sind 'meritorische Güter' im Kontext der Gefahrenabwehr?", o: ["Luxusgüter", "Güter, die gesellschaftlich notwendig sind, aber vom freien Markt nicht ausreichend bereitgestellt werden", "Importierte Medikamente", "Digitale Gesundheits-Apps"], c: 1, isStar: true, expl: "Der Markt versagt bei diesen Gütern, daher greift der Staat ein.", memo: "Meritorisch = Staat muss helfen." },
+                { id: 'q4_2', cat: 'P4', q: "Welche der folgenden Organisationen ist ein typischer gemeinnütziger Akteur (NPO) in der Gefahrenabwehr?", o: ["Falck (privater Rettungsdienst)", "Das Deutsche Rote Kreuz (DRK)", "Die Berufsfeuerwehr einer Großstadt", "Ein pharmazeutisches Unternehmen"], c: 1, expl: "DRK, Johanniter, ASB, Malteser = klassische NPOs.", memo: "DRK = Gemeinnützig." },
+                { id: 'q4_3', cat: 'P4', q: "Was bedeutet das 'Kostendeckungsprinzip' bei NPOs?", o: ["Maximierung des Gewinns für Anteilseigner", "Das Ziel, mindestens eine 'Schwarze Null' zu erreichen (Kosten = Einnahmen)", "100% staatliche Finanzierung", "Umsatzsteuerbefreiung"], c: 1, expl: "Kein Profit nötig, aber auch kein Verlust.", memo: "Schwarze Null reicht." },
+                { id: 'q4_4', cat: 'P4', q: "Warum ist das Ehrenamt in der Gefahrenabwehr so besonders für das Management?", o: ["Ehrenamtliche arbeiten effizienter als Festangestellte", "Es erfordert extreme Sinnstiftung als Führungsinstrument, da kein Gehalt als Anreiz dient", "Ehrenamtliche haben keine Weisungspflicht", "Es gibt keine Ehrenamtlichen mehr"], c: 1, expl: "Ohne Gehalt muss der Sinn der Arbeit allein motivieren.", memo: "Kein Geld = Sinn muss motivieren." },
+                { id: 'q4_5', cat: 'P4', q: "Was beschreibt der 'philanthropische Markt' für NPOs?", o: ["Den Aktienmarkt", "Den Wettbewerb um Spenden und Ehrenamtliche, wobei Image/Vertrauen die Währung ist", "Den Immobilienmarkt", "Einen Markt für Luxusgüter"], c: 1, expl: "NPOs konkurrieren um Spenden und Freiwillige – wer vertrauenswürdiger wirkt, gewinnt.", memo: "Spenden + Ehrenamt = Philanthropischer Markt." },
+                { id: 'q4_6', cat: 'P4', q: "Was bedeutet die 'Intangibilität' einer Dienstleistung?", o: ["Sie ist sehr teuer", "Sie ist immateriell, nicht greifbar und nicht lagerfähig", "Sie wird nur digital angeboten", "Sie ist steuerfrei"], c: 1, expl: "Im Gegensatz zu einem physischen Produkt kann man eine DL nicht anfassen.", memo: "Intangibel = Nicht anfassbar." },
+                { id: 'q4_7', cat: 'P4', q: "Was verursacht die 'ständige Leistungsbereitschaft' in der Gefahrenabwehr wirtschaftlich?", o: ["Gewinne", "Hohe Vorhaltekosten, auch wenn kein Einsatz stattfindet", "Steuererleichterungen", "Niedrigere Personalkosten"], c: 1, expl: "Ein RTW muss 24/7 besetzt bereitstehen, selbst wenn er nicht gerufen wird.", memo: "Bereitschaft = Kosten ohne Einsatz." },
+                { id: 'q4_8', cat: 'P4', q: "Was ist der 'externe Faktor' bei der Dienstleistungserstellung?", o: ["Der Lieferant", "Der Konsument/Patient, der in den Leistungsprozess integriert werden muss", "Die Finanzbehörde", "Das Wetter"], c: 1, expl: "Ohne Patient keine Behandlung, ohne Feuer kein Löscheinsatz.", memo: "Externer Faktor = Der Kunde/Patient." },
+                { id: 'q4_9', cat: 'P4', q: "Was beschreibt das 'Uno-actu-Prinzip'?", o: ["Produktion auf Vorrat", "Produktion und Konsumtion der DL fallen zeitlich exakt zusammen", "Nur ein Akteur ist beteiligt", "Einmalzahlungen"], c: 1, expl: "Die Behandlung wird gleichzeitig erbracht und konsumiert.", memo: "Uno-actu = Gleichzeitig." },
+                { id: 'q4_10', cat: 'P4', q: "Warum versagt der klassische Preiswettbewerb in absoluten Notlagen?", o: ["Wegen hoher Steuern", "Wegen extremer Informationsasymmetrie und Zeitdruck (Lebensgefahr)", "Weil es keine Alternativen gibt", "Weil der Staat die Preise festlegt"], c: 1, isStar: true, expl: "Im Notfall kann man nicht Preise vergleichen oder eine Zweitmeinung einholen.", memo: "Notlage = Kein Preiswettbewerb." },
+                { id: 'q4_11', cat: 'P4', q: "Warum können Feuerwehr und Notarztversorgung nicht allein dem freien Markt überlassen werden?", o: ["Weil sie zu profitabel sind", "Weil als meritorische Güter Marktversagen droht (v.a. im ländlichen Raum)", "Weil es EU-Recht so vorschreibt", "Weil sie keine Dienstleistungen sind"], c: 1, expl: "Auf dem Land lohnt sich ein Notarzt finanziell oft nicht, aber er wird gebraucht.", memo: "Marktversagen auf dem Land." },
+                { id: 'q4_12', cat: 'P4', q: "Was erschwert die Flexibilität staatlicher Akteure in der Gefahrenabwehr besonders?", o: ["Zu wenig Personal", "Kameralistik (Haushaltsrecht) und strenges Vergaberecht", "Fehlende Motivation der Mitarbeiter", "Die Gewerkschaften"], c: 1, expl: "Öffentlich-rechtliche Regeln zwingen zu Formvorschriften statt schneller Effizienz.", memo: "Kameralistik = Langsam aber formal korrekt." },
+
+                // --- P5: MANAGEMENTINSTRUMENTE (29 Fragen) ---
+                { id: 'q5_1', cat: 'P5', q: "Welcher Zieltyp lässt sich direkt in Geldgrößen messen?", o: ["Nicht-monetäre Ziele", "Soziale Ziele", "Monetäre Ziele (z.B. Gewinn, Liquidität)", "Ökologische Ziele"], c: 2, expl: "Monetär = direkt in Euro messbar.", memo: "Monetär = Geld." },
+                { id: 'q5_2', cat: 'P5', q: "Ist 'Sicherheit' (z.B. Datensicherheit, Schutz vor Terroranschlägen) ein monetäres Unternehmensziel?", o: ["Nein, niemals", "Ja, es wird oft als monetäres Existenzsicherungsziel eingeordnet", "Nur in der IT-Branche", "Es ist gar kein Unternehmensziel"], c: 1, isStar: true, expl: "Sicherheit schützt die finanzielle Existenz und wird oft den monetären Zielen zugeordnet.", memo: "Sicherheit = Existenz = Monetär." },
+                { id: 'q5_3', cat: 'P5', q: "Was sind Beispiele für 'nicht-monetäre' Unternehmensziele?", o: ["Umsatz und Gewinn", "Image, Prestige, Machtausübung, Marktstellung", "Liquidität und Rentabilität", "Steuern und Abgaben"], c: 1, expl: "Diese Ziele lassen sich nicht direkt in Euro messen.", memo: "Nicht-monetär = Nicht direkt in Geld messbar." },
+                { id: 'q5_4', cat: 'P5', q: "Welches Führungsmodell bewertet Führungsstile auf den zwei Achsen 'Sachorientierung' und 'Personenorientierung'?", o: ["Maslows Bedürfnispyramide", "Das Grid-Modell (Blake/Mouton)", "Porters Five Forces", "Die BCG-Matrix"], c: 1, expl: "Das Managerial Grid bewertet, wie stark ein Manager auf Output vs. Menschen fokussiert.", memo: "Grid = Sache vs. Person." },
+                { id: 'q5_5', cat: 'P5', q: "Was bedeutet der Führungsstil '1/9' (Glacéhandschuh-Management) im Grid-Modell?", o: ["Maximaler Fokus auf Output, minimaler Fokus auf Menschen", "Maximaler Fokus auf Menschen und Harmonie, minimaler Fokus auf Output", "Gleichgewicht zwischen beiden", "Keinerlei Führung"], c: 1, expl: "Der Manager will, dass sich alle wohlfühlen, vernachlässigt aber die Ergebnisse.", memo: "1/9 = Harmonie über alles." },
+                { id: 'q5_6', cat: 'P5', q: "Was sind die 4 P's des klassischen Marketing-Mix?", o: ["Plan, Process, People, Proof", "Product, Price, Place, Promotion", "Public, Private, Profit, Poor", "Place, Plan, Produce, Pay"], c: 1, expl: "Produkt, Preis, Vertrieb (Place) und Kommunikation (Promotion).", memo: "Product, Price, Place, Promotion." },
+                { id: 'q5_7', cat: 'P5', q: "Welcher Zeithorizont und Detaillierungsgrad wird der 'strategischen Planung' in der Regel zugeordnet?", o: ["Kurzfristig (< 1 Jahr) und extrem detailliert", "Langfristig (> 5 Jahre), global und mit geringem Detaillierungsgrad", "Mittelfristig und sehr exakt", "Täglich und spontan"], c: 1, isStar: true, expl: "Strategie gibt die grobe, langfristige Richtung vor (z.B. neue Märkte erschließen).", memo: "Strategie = Weitblick & Grob." },
+                { id: 'q5_8', cat: 'P5', q: "In welche Planungsphase fällt die Erstellung eines konkreten monatlichen Dienstplans für die Notaufnahme?", o: ["Strategische Planung", "Taktische Planung", "Operative Planung", "Visionäre Planung"], c: 2, expl: "Operativ = Kurzfristig, das direkte Tagesgeschäft mit extrem hohem Detailgrad.", memo: "Operativ = Das Hier und Jetzt." },
+                { id: 'q5_9', cat: 'P5', q: "Welche zentrale Fragestellung wird durch die 'Aufbauorganisation' beantwortet?", o: ["Wann und wo geschieht etwas?", "Wie viel Gewinn machen wir?", "Wer macht was? (Strukturierung der Hierarchie und Stellen)", "Wie ist das Wetter?"], c: 2, isStar: true, expl: "Die Aufbauorganisation bildet das statische Gerüst (Organigramm).", memo: "Aufbau = Das Gerüst / Wer?" },
+                { id: 'q5_10', cat: 'P5', q: "Welche Fragestellung klärt hingegen die 'Ablauforganisation'?", o: ["Wer ist der Chef?", "Wann und wo geschieht etwas? (Strukturierung der Arbeitsprozesse)", "Welche Rechtsform haben wir?", "Wer haftet?"], c: 1, expl: "Sie kümmert sich um die dynamischen Prozesse.", memo: "Ablauf = Der Prozess / Wann & Wo?" },
+                { id: 'q5_11', cat: 'P5', q: "Herr X möchte allein ein Unternehmen gründen. Welche Rechtsform geht damit zwangsläufig einher, wenn er keine besondere Gesellschaftsform (wie eine GmbH) anmeldet?", o: ["Gesellschaft bürgerlichen Rechts (GbR)", "Offene Handelsgesellschaft (OHG)", "Einzelunternehmen (mit voller persönlicher Haftung)", "Aktiengesellschaft (AG)"], c: 2, expl: "Wer allein startet und nichts anmeldet, ist automatisch ein Einzelunternehmen und haftet mit Haus und Hof.", memo: "Allein = Einzelunternehmen." },
+                { id: 'q5_12', cat: 'P5', q: "Zwei Freunde wollen unkompliziert und ohne die Einzahlung eines Stammkapitals gemeinsam einen kleinen Handel eröffnen. Welche Rechtsform entsteht hierbei meist automatisch?", o: ["GmbH", "Aktiengesellschaft (AG)", "Gesellschaft bürgerlichen Rechts (GbR)", "Eine Ein-Personen-UG"], c: 2, isStar: true, expl: "Sobald sich mehrere Personen für einen gemeinsamen Zweck zusammentun (ohne ins Handelsregister zu gehen), entsteht eine GbR. Sie haften persönlich.", memo: "Zusammen ohne Notar = GbR." },
+                { id: 'q5_13', cat: 'P5', q: "Frau Z möchte ein Unternehmen gründen, aber unter keinen Umständen mit ihrem Privatvermögen haften. Welches ist das zentrale Merkmal von Kapitalgesellschaften (wie der GmbH), das ihr hier hilft?", o: ["Es gibt keine Steuern", "Die Haftung ist auf das Gesellschaftsvermögen beschränkt", "Man braucht kein Startkapital", "Jeder darf mitbestimmen"], c: 1, isStar: true, expl: "Bei der GmbH (Gesellschaft mit beschränkter Haftung) ist das Privatvermögen geschützt. Dafür müssen 25.000€ Stammkapital hinterlegt werden.", memo: "Kapitalgesellschaft = Haftungsschild." },
+                { id: 'q5_14', cat: 'P5', q: "Welche der folgenden Gesellschaften ist eine klassische Personengesellschaft?", o: ["GmbH", "Aktiengesellschaft (AG)", "Kommanditgesellschaft (KG)", "Unternehmergesellschaft (UG)"], c: 2, expl: "GbR, OHG und KG sind Personengesellschaften. Die GmbH gehört zum Kapital.", memo: "KG = Personengesellschaft." },
+                { id: 'q5_15', cat: 'P5', q: "Welches Analyseinstrument wird klassischerweise genutzt, um das 'Mikroumfeld' (das direkte Branchenumfeld) eines Unternehmens zu untersuchen?", o: ["Die PESTEL-Analyse", "Porter's Five Forces", "Die interne Wertkettenanalyse", "Die BCG-Matrix"], c: 1, expl: "Porter analysiert die direkten Akteure in der unmittelbaren Umgebung: Lieferanten, Kunden, Konkurrenten.", memo: "Porter = Mikro." },
+                { id: 'q5_16', cat: 'P5', q: "Was beschreibt das 'Makroumfeld' einer Organisation?", o: ["Das interne Betriebsklima", "Die Rivalität der direkten Konkurrenten", "Übergeordnete Einflüsse wie politische oder technologische Trends, die kaum direkt beeinflussbar sind", "Die Verhandlungsmacht der Lieferanten"], c: 2, isStar: true, expl: "Das Makroumfeld (Globale Umwelt) schwebt über der ganzen Branche und liefert der SWOT-Analyse die Chancen und Risiken.", memo: "Makro = Global und unbeeinflussbar." },
+                { id: 'q5_17', cat: 'P5', q: "Welches Szenario beschreibt eine extrem hohe 'Abnehmermacht' (Kundenmacht) nach Porter im deutschen Gesundheitswesen?", o: ["Die Pharmaindustrie verlangt hohe Preise", "Die Gesetzlichen Krankenkassen (GKV) bündeln Millionen Versicherte und diktieren die Preise durch DRGs", "Telemedizin ersetzt Arztbesuche", "Neue MVZs öffnen"], c: 1, expl: "Da Kliniken auf das Geld der GKV angewiesen sind, müssen sie die Vorgaben akzeptieren.", memo: "Kasse zahlt = Kasse hat die Macht." },
+                { id: 'q5_18', cat: 'P5', q: "Was wäre ein klassisches 'Substitut' (Ersatzprodukt) für eine traditionelle physiotherapeutische Praxis nach Porter?", o: ["Eine zweite Praxis im Ort", "Eine zertifizierte, digitale Gesundheits-App (DiGA) zur Rückenschulung für zuhause", "Der Hersteller der Liegen", "Ein Krankenhaus"], c: 1, expl: "Ein Substitut ist eine alternative technologische Lösung für exakt dasselbe Bedürfnis.", memo: "Substitut = Die andere Art der Lösung." },
+                { id: 'q5_19', cat: 'P5', q: "Warum ist die 'Verhandlungsmacht der Lieferanten' bei bestimmten Medikamenten nach Porter extrem hoch?", o: ["Weil es zu viele Generika gibt", "Wegen des Vergaberechts", "Weil ein Patentschutz besteht und der Hersteller somit ein Monopol auf dieses Medikament hat", "Weil Patienten es ablehnen"], c: 2, expl: "Gibt es ein patentgeschütztes Medikament ohne Alternative, muss jeder geforderte Preis gezahlt werden.", memo: "Monopol = Absolute Lieferantenmacht." },
+                { id: 'q5_20', cat: 'P5', q: "Wofür stehen die vier Buchstaben in der SWOT-Analyse?", o: ["Strategy, Wealth, Organization, Team", "Strengths, Weaknesses, Opportunities, Threats", "Sales, Work, Operations, Tasks", "Stärken, Wissen, Ordnung, Timing"], c: 1, expl: "Stärken & Schwächen (intern) sowie Chancen & Risiken (extern).", memo: "S und W intern, O und T extern." },
+                { id: 'q5_21', cat: 'P5', q: "Warum führt ein Unternehmen eine SWOT-Analyse durch?", o: ["Um die Steuern zu berechnen", "Um Stärken und Schwächen mit externen Marktchancen und -risiken abzugleichen und daraus strategische Stoßrichtungen abzuleiten", "Nur um Mitarbeiter zu bewerten", "Zur Berechnung der Produktivität"], c: 1, isStar: true, expl: "Die Matrix verknüpft das Unternehmen mit der Umwelt, um Handlungsfelder aufzudecken.", memo: "Innen trifft Außen." },
+                { id: 'q5_22', cat: 'P5', q: "Strategieableitung in der SWOT: Eine interne Schwäche (Weakness) trifft auf ein externes Risiko (Threat). Empfohlene Stoßrichtung?", o: ["Aggressive Expansion", "Massive Investitionen", "Verteidigung / Abbau-Strategie (Worst-Case Szenario)", "Preise verdoppeln"], c: 2, isStar: true, expl: "Das ist die gefährlichste Kombination. Um Schaden abzuwenden, müssen z.B. unrentable Standorte geschlossen werden.", memo: "Schwäche + Risiko = Abbauen." },
+                { id: 'q5_23', cat: 'P5', q: "Was stellt die Größe der Kreise (Bubbles) im BCG-Portfolio-Diagramm dar?", o: ["Das Alter des Produkts", "Die Anzahl der Mitarbeiter", "Den prozentualen Umsatzanteil des Produkts am Gesamtumsatz", "Den Aktienkurs"], c: 2, isStar: true, expl: "Je größer die Bubble auf dem Chart, desto mehr trägt dieses Produkt finanziell bei.", memo: "Großer Kreis = Bringt viel Umsatz." },
+                { id: 'q5_24', cat: 'P5', q: "Was ist die empfohlene Normstrategie für 'Cash Cows' (niedriges Marktwachstum, hoher relativer Marktanteil)?", o: ["Desinvestition", "Selektion", "Aggressive Investition", "Abschöpfung (Ernten)"], c: 3, expl: "Der Markt wächst kaum noch. Gewinne werden 'gemolken', um andere Produkte (Sterne) zu finanzieren.", memo: "Kühe werden gemolken." },
+                { id: 'q5_25', cat: 'P5', q: "Was ist ein gravierender theoretischer Nachteil (Kritikpunkt) der BCG-Matrix?", o: ["Zu kompliziert", "Es ist eine reine Status-quo-Betrachtung (Stichtag), eine zeitliche Dynamik wird nicht abgebildet", "Basiert auf 15 Faktoren", "Ignoriert Umsatz"], c: 1, isStar: true, expl: "Die Matrix ist nur eine Momentaufnahme (Foto) und zeigt nicht, wohin sich Produkte entwickeln (Film).", memo: "Nur ein Foto, keine Dynamik." },
+                { id: 'q5_26', cat: 'P5', q: "Im Grid-Modell nach Blake/Mouton bedeutet die Ausprägung '9/1' (Befehl-Gehorsam-Management):", o: ["Harmonie und Wohlfühlatmosphäre", "Kompromiss", "Hohe Sachorientierung (Output), extrem niedrige Personenorientierung (diktatorisch)", "Ideales Team-Management"], c: 2, isStar: true, expl: "9 auf Output, 1 auf Mensch. Macht wird rein genutzt, um Ergebnisse zu erzwingen.", memo: "9 auf Output = Diktator." },
+                { id: 'q5_27', cat: 'P5', q: "Welche Achsen hat die BCG-Portfolio Matrix?", o: ["Umsatz (Y) und Gewinn (X)", "Marktwachstum (Y-Achse) und Relativer Marktanteil (X-Achse)", "Zeit (Y) und Kosten (X)", "Stärken und Schwächen"], c: 1, expl: "Bewertet wird das Zukunftspotenzial des Marktes (Wachstum) und die eigene Wettbewerbsposition (Marktanteil).", memo: "Wachstum trifft Marktanteil." },
+                { id: 'q5_28', cat: 'P5', q: "Was kennzeichnet A-Güter in der ABC-Analyse (Materialwirtschaft)?", o: ["Sie machen 80% der Menge, aber nur 15% des Wertes aus", "Sie machen nur ca. 15% der Verbrauchsmenge aus, binden aber rund 80% des Kapitalwertes", "Sie sind völlig wertlos", "Sie sind immer immateriell"], c: 1, expl: "Wenig Menge, aber extrem teuer. Hier lohnt sich Planung extrem.", memo: "A-Güter = Teuer & Selten." },
+                { id: 'q5_29', cat: 'P5', q: "Welche Beschaffungsstrategie wählt man idealerweise für 'XA-Güter' (sehr hoher Wert, völlig konstanter Verbrauch)?", o: ["Großzügige Vorratsbeschaffung", "Ausschließlich fallweise Beschaffung auf Zuruf", "Bedarfsorientierte Beschaffung (z.B. Just-in-Time)", "Ignorieren"], c: 2, isStar: true, expl: "Da sie teuer sind (A), will man Lagerkosten sparen. Da der Verbrauch konstant ist (X), lässt sich Just-in-Time perfekt planen.", memo: "XA = Teuer & Planbar = Just-in-Time." }
+            ]
+        };
+
+        /* ============================================================
+         * OPTIMIZED APP - ALL BUG FIXES AND OPTIMIZATIONS APPLIED
+         * ============================================================ */
+
+        /* OPT #1: Question lookup map for O(1) access */
+        const questionMap = {};
+        contentDB.questions.forEach(q => { questionMap[q.id] = q; });
+
+        /* OPT #2: Color threshold helper (extracted from duplicated logic) */
+        function getScoreColor(pct) {
+            if (pct >= 80) return '#F97316';
+            if (pct >= 50) return '#D97706';
+            return '#EF4444';
+        }
+
+        /* OPT #5: Text sanitization helper - escapes HTML entities for plain text insertion */
+        function sanitize(str) {
+            const el = document.createElement('div');
+            el.textContent = str;
+            return el.innerHTML;
+        }
+
+        /* OPT #8 (BUG FIX #8): Fisher-Yates shuffle (unbiased) */
+        function fisherYatesShuffle(arr) {
+            const a = [...arr];
+            for (let i = a.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [a[i], a[j]] = [a[j], a[i]];
+            }
+            return a;
+        }
+
+        /* OPT #6: Named modal helper functions (reduces inline handler verbosity) */
+        /* These are also accessible as app.showModal / app.hideModal */
+
+        const app = {
+            state: {
+                store: JSON.parse(localStorage.getItem('moe_store_v5_final')) || { modules: {}, masterScore: 0 },
+                session: { mode: null, qs: [], idx: 0, corrects: 0, lastChoice: null, answered: false /* BUG FIX #4: proper answered flag */ },
+                fc: { idx: 0, flipped: false }
+            },
+            init: function() {
+                this.renderDashboard();
+                this.renderLearnMenu();
+                /* BUG FIX #5: Set flashcard counter dynamically */
+                document.getElementById('fc-counter').innerText = '1 / ' + contentDB.flashcards.length;
+                /* OPT #3: Keyboard navigation */
+                this.initKeyboardNav();
+                /* OPT #4: Mobile swipe for flashcards */
+                this.initFlashcardSwipe();
+            },
+            save: function() { localStorage.setItem('moe_store_v5_final', JSON.stringify(this.state.store)); },
+
+            /* OPT #6: Modal helpers */
+            showModal: function(id) { document.getElementById(id).classList.remove('hidden'); },
+            hideModal: function(id) { document.getElementById(id).classList.add('hidden'); },
+            
+            renderDashboard: function() {
+                /* BUG FIX #3: Use r=45 for master circle (matches SVG r="45") */
+                this.renderCircle('dash-master-prog', 'dash-master-text', this.state.store.masterScore, 45);
+                
+                const cont = document.getElementById('cluster-container');
+                cont.innerHTML = contentDB.pillars.map(p => {
+                    const total = contentDB.questions.filter(q => q.cat === p.id).length;
+                    if(total === 0) return ''; 
+                    
+                    const mod = this.state.store.modules[p.id] || { ans: {} };
+                    let correct = 0;
+                    /* OPT #1: Use questionMap for O(1) lookups */
+                    Object.keys(mod.ans).forEach(qid => { const q = questionMap[qid]; if(q && mod.ans[qid] === q.c) correct++; });
+                    const pct = Math.round((correct / total) * 100);
+                    /* OPT #2: Use getScoreColor helper */
+                    const color = getScoreColor(pct);
+                    
+                    return `<div onclick="app.checkQuizStart('${p.id}')" class="bg-white rounded-xl p-6 shadow-sm hover:shadow-xl cursor-pointer border border-gray-100 flex flex-col justify-between h-full group transition-all duration-300 transform hover:-translate-y-1">
+                        <div>
+                            <div class="flex justify-between items-start mb-4">
+                                <h3 class="text-xl font-bold text-gray-800 group-hover:text-moe-primary transition-colors pr-2 leading-tight">${sanitize(p.title)}</h3>
+                                <div class="relative w-12 h-12 flex-shrink-0">
+                                    <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                                        <circle cx="50" cy="50" r="40" fill="none" stroke="#F3F4F6" stroke-width="8" />
+                                        <circle cx="50" cy="50" r="40" fill="none" stroke="${color}" stroke-width="8" stroke-dasharray="251.3" stroke-dashoffset="${251.3 - (251.3*pct/100)}" class="progress-ring__circle" stroke-linecap="round" />
+                                    </svg>
+                                    <span class="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-gray-500">${pct}%</span>
+                                </div>
+                            </div>
+                            <p class="text-gray-500 text-sm leading-relaxed">${sanitize(p.desc)}</p>
+                        </div>
+                        <div class="text-[10px] text-gray-400 font-bold uppercase mt-6 pt-3 border-t border-gray-100">${total} Prüfungsfragen</div>
+                    </div>`;
+                }).join('');
+            },
+
+            renderCircle: function(id, tid, pct, r) {
+                const el = document.getElementById(id); const circ = 2 * Math.PI * r;
+                el.style.strokeDasharray = circ; el.style.strokeDashoffset = circ - (pct/100)*circ;
+                /* OPT #2: Use getScoreColor helper */
+                el.style.stroke = getScoreColor(pct);
+                document.getElementById(tid).innerText = pct + '%';
+            },
+
+            checkQuizStart: function(id) {
+                this.state.session.mode = id;
+                const all = contentDB.questions.filter(q => q.cat === id || id === 'all');
+                const mod = this.state.store.modules[id];
+                
+                if (id === 'all') {
+                    /* BUG FIX #8: Use Fisher-Yates shuffle instead of biased sort */
+                    this.startQuiz('all', fisherYatesShuffle(contentDB.questions).slice(0, 50));
+                    return;
+                }
+
+                if (mod) {
+                    /* OPT #1: Use questionMap for O(1) lookups */
+                    const wrong = all.filter(q => mod.ans[q.id] === undefined || mod.ans[q.id] !== q.c);
+                    if (wrong.length === 0) {
+                        this.pendingModuleId = id;
+                        /* BUG FIX #2: Use consistent variable name pendingAll (not pendingAllQs) */
+                        this.pendingAll = all;
+                        this.showModal('modal-perfect');
+                        return;
+                    } else if (wrong.length < all.length) {
+                        this.pendingModuleId = id;
+                        this.pendingWrong = wrong;
+                        this.pendingAll = all; 
+                        this.showModal('modal-retry');
+                        return;
+                    }
+                }
+                
+                this.startQuiz(id, all);
+            },
+
+            startQuizMode: function(m) {
+                this.hideModal('modal-retry');
+                this.hideModal('modal-perfect');
+                
+                if (m === 'reset') {
+                    this.state.store.modules[this.state.session.mode] = { ans: {} };
+                    this.save();
+                }
+                
+                /* BUG FIX #2: pendingAll is now always set consistently in both retry and perfect paths */
+                this.startQuiz(this.state.session.mode, m === 'retry' ? this.pendingWrong : this.pendingAll);
+            },
+
+            startQuiz: function(id, qs) {
+                this.state.session.qs = qs;
+                this.state.session.idx = 0;
+                this.state.session.corrects = 0;
+                this.state.session.answered = false; /* BUG FIX #4 */
+                this.switchView('view-quiz');
+                this.renderQuestion();
+            },
+
+            renderQuestion: function() {
+                const q = this.state.session.qs[this.state.session.idx];
+                /* BUG FIX #4: Reset answered flag for new question */
+                this.state.session.answered = false;
+                
+                document.getElementById('q-index').innerText = this.state.session.idx + 1;
+                document.getElementById('q-current').innerText = this.state.session.idx + 1;
+                document.getElementById('q-total').innerText = this.state.session.qs.length;
+                /* OPT #5: Use sanitize for plain text question content */
+                document.getElementById('q-text').innerText = q.q;
+                
+                const pillar = contentDB.pillars.find(p => p.id === q.cat);
+                document.getElementById('q-cat-label').innerText = pillar ? pillar.title : 'Master-Klausur';
+                
+                document.getElementById('star-badge').style.display = q.isStar ? 'block' : 'none';
+                document.getElementById('progress-bar').style.width = (this.state.session.idx / this.state.session.qs.length * 100) + '%';
+                
+                const cont = document.getElementById('options-container');
+                /* OPT #5: Use sanitize for option text */
+                cont.innerHTML = q.o.map((opt, i) => `<button onclick="app.handleAnswer(${i})" class="w-full text-left p-5 rounded-xl border-2 border-gray-200 hover:border-moe-primary transition-all font-medium flex items-center group bg-white shadow-sm text-lg">
+                    <span class="w-8 h-8 rounded bg-gray-100 mr-4 flex items-center justify-center font-bold text-gray-400 group-hover:bg-white border group-hover:border-moe-primary shrink-0">${String.fromCharCode(65+i)}</span><span class="text-gray-700">${sanitize(opt)}</span></button>`).join('');
+                
+                document.getElementById('feedback-layer').classList.add('hidden');
+                document.getElementById('ai-explain-box').classList.add('hidden');
+                document.getElementById('btn-next').disabled = true;
+            },
+
+            handleAnswer: function(c) {
+                /* BUG FIX #4: Use proper boolean flag instead of btn-next.disabled */
+                if(this.state.session.answered) return;
+                this.state.session.answered = true;
+                
+                const q = this.state.session.qs[this.state.session.idx];
+                this.state.session.lastChoice = c;
+                const isC = c === q.c;
+
+                /* BUG FIX #1: Always save answer to the question's category module, regardless of mode */
+                if(!this.state.store.modules[q.cat]) this.state.store.modules[q.cat] = { ans: {} };
+                this.state.store.modules[q.cat].ans[q.id] = c;
+                this.save();
+
+                if(isC) this.state.session.corrects++;
+                
+                const btns = document.getElementById('options-container').children;
+                for(let i=0; i<btns.length; i++) { 
+                    btns[i].disabled = true; 
+                    btns[i].className = "w-full text-left p-5 rounded-xl border-2 font-medium flex items-center shadow-sm text-lg";
+                    if(i === q.c) {
+                        btns[i].classList.add('bg-orange-50', 'border-moe-primary', 'text-moe-primary');
+                        btns[i].innerHTML = `<span class="mr-4 text-2xl">✅</span> <span>${sanitize(q.o[i])}</span>`;
+                    } else if(i === c && !isC) {
+                        btns[i].classList.add('bg-red-50', 'border-moe-error', 'text-moe-error');
+                        btns[i].innerHTML = `<span class="mr-4 text-2xl">❌</span> <span>${sanitize(q.o[i])}</span>`;
+                    } else {
+                        btns[i].classList.add('bg-gray-50', 'border-gray-100', 'text-gray-400', 'opacity-50');
+                        btns[i].innerHTML = `<span class="mr-4 opacity-0">⬜</span> <span>${sanitize(q.o[i])}</span>`;
+                    }
+                }
+                
+                const fl = document.getElementById('feedback-layer'); fl.classList.remove('hidden');
+                document.getElementById('fb-icon').innerText = isC ? '✓' : '✕';
+                document.getElementById('fb-icon').className = "w-12 h-12 rounded-full flex items-center justify-center shrink-0 text-2xl font-bold text-white " + (isC ? 'bg-moe-primary' : 'bg-moe-error');
+                document.getElementById('fb-title').innerText = isC ? 'Exzellent!' : 'Leider falsch';
+                document.getElementById('fb-title').className = "font-bold text-2xl mb-1 " + (isC ? 'text-moe-primary' : 'text-moe-error');
+                /* NOTE: q.expl is from internal DB, trusted HTML content */
+                document.getElementById('fb-text').innerHTML = q.expl; 
+                document.getElementById('fb-memo').innerText = q.memo;
+                
+                const aiBtn = document.getElementById('ai-explain-btn');
+                aiBtn.innerHTML = "✨ Lass dir das genauer von der KI erklären"; aiBtn.disabled = false;
+                
+                const next = document.getElementById('btn-next'); next.disabled = false; next.innerText = (this.state.session.idx === this.state.session.qs.length-1) ? "Prüfung beenden" : "Nächste Frage ❯";
+                
+                if(window.innerWidth < 768) {
+                    setTimeout(() => fl.scrollIntoView({behavior: 'smooth', block: 'nearest'}), 150);
+                }
+            },
+
+            nextQuestion: function() { 
+                if(this.state.session.idx < this.state.session.qs.length-1) { this.state.session.idx++; this.renderQuestion(); window.scrollTo(0,0); }
+                else this.finishQuiz();
+            },
+
+            finishQuiz: function() {
+                const pct = Math.round(this.state.session.corrects / this.state.session.qs.length * 100);
+                if(this.state.session.mode === 'all') { this.state.store.masterScore = pct; this.save(); }
+                /* BUG FIX #3: Use r=80 for results circle (matches SVG r="80") */
+                this.renderCircle('res-circle', 'res-score', pct, 80);
+                document.getElementById('res-msg').innerText = pct >= 85 ? "Herausragende Leistung! Klausurreif." : (pct >= 50 ? "Bestanden, aber Grundlagen im Hub vertiefen." : "Bitte das Skript im Wissens-Hub intensiv lesen!");
+
+                /* BUG FIX #7: Set result subtitle dynamically based on quiz mode */
+                const subtitleEl = document.getElementById('result-subtitle');
+                if (this.state.session.mode === 'all') {
+                    subtitleEl.innerText = 'Master-Prüfung: Management Basics';
+                } else {
+                    const pillar = contentDB.pillars.find(p => p.id === this.state.session.mode);
+                    subtitleEl.innerText = pillar ? pillar.title : 'Zusammenfassung deiner Leistung.';
+                }
+
+                this.switchView('view-results'); this.renderDashboard();
+            },
+
+            renderLearnMenu: function() { document.getElementById('learn-menu').innerHTML = contentDB.pillars.map(p => `<button onclick="app.loadLearn('${p.id}')" class="w-full text-left p-4 rounded-xl bg-white border border-gray-200 transition-all font-bold flex items-center gap-3 mb-2 shadow-sm group hover:border-moe-primary text-gray-700"><span class="w-2 h-2 rounded-full bg-moe-primary group-hover:scale-150 transition-transform"></span><span>${sanitize(p.title)}</span></button>`).join(''); },
+            loadLearn: function(id) { 
+                const p = contentDB.pillars.find(x => x.id === id); this.state.session.hubId = id; document.getElementById('learn-placeholder').classList.add('hidden');
+                document.getElementById('learn-content-scroll-area').classList.remove('hidden');
+                
+                const hasQuestions = contentDB.questions.some(q => q.cat === id);
+                const quizBtnHTML = hasQuestions ? `<div class="mt-12 flex justify-end border-t border-gray-200 pt-6"><button onclick="app.checkQuizStart('${id}')" class="bg-moe-primary hover:bg-moe-dark text-white px-8 py-4 rounded-xl font-bold shadow-lg transition-all transform hover:-translate-y-1">Modul-Quiz starten ❯</button></div>` : '';
+
+                /* NOTE: p.content is from internal DB, trusted HTML content */
+                document.getElementById('learn-content').innerHTML = `<h2 class="text-3xl font-bold text-moe-primary mb-4">${sanitize(p.title)}</h2><p class="text-gray-500 mb-8 border-b border-gray-200 pb-4">${sanitize(p.desc)}</p>${p.content}${quizBtnHTML}`;
+                document.getElementById('ai-answer-box').classList.add('hidden'); document.getElementById('ai-question-input').value = "";
+            },
+
+            switchView: function(viewId) { 
+                const views = ['view-dashboard', 'view-quiz', 'view-results', 'view-learning', 'view-flashcards'];
+                views.forEach(id => {
+                    const el = document.getElementById(id);
+                    if(el) {
+                        if(id === viewId) el.classList.remove('hidden');
+                        else el.classList.add('hidden');
+                    }
+                });
+                window.scrollTo(0,0);
+                if(viewId === 'view-flashcards') this.nextFlashcard(0);
+            },
+            
+            goHome: function() { 
+                const quizView = document.getElementById('view-quiz');
+                if(quizView && !quizView.classList.contains('hidden')) {
+                    this.showModal('modal-abort');
+                } else {
+                    app.switchView('view-dashboard');
+                }
+            },
+            
+            confirmAbort: function() {
+                this.hideModal('modal-abort');
+                app.switchView('view-dashboard');
+            },
+
+            resetData: function() {
+                this.showModal('modal-reset');
+            },
+            
+            confirmReset: function() {
+                localStorage.removeItem('moe_store_v5_final'); 
+                location.reload(); 
+            },
+
+            flipFlashcard: function() { this.state.fc.flipped = !this.state.fc.flipped; document.getElementById('flashcard-inner').classList.toggle('rotate-y-180', this.state.fc.flipped); },
+            nextFlashcard: function(d) { 
+                this.state.fc.idx = (this.state.fc.idx+d+contentDB.flashcards.length)%contentDB.flashcards.length; 
+                this.state.fc.flipped = false; document.getElementById('flashcard-inner').classList.remove('rotate-y-180'); 
+                setTimeout(() => { const c = contentDB.flashcards[this.state.fc.idx]; document.getElementById('fc-counter').innerText = `${this.state.fc.idx+1} / ${contentDB.flashcards.length}`; document.getElementById('fc-front').innerText = c.front; document.getElementById('fc-back').innerText = c.back; }, 150); 
+            },
+
+            /* BUG FIX #6: Graceful API key error message */
+            callAI: async function(p) {
+                const apiKey = ""; 
+                if (!apiKey) {
+                    return "⚠️ <strong>KI-Tutor nicht konfiguriert.</strong> Bitte hinterlege einen gültigen API-Key in der App-Konfiguration (Variable <code>apiKey</code> in der Funktion <code>callAI</code>), um den KI-Tutor zu nutzen.";
+                }
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+                try {
+                    const r = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ parts: [{ text: p }] }] }) });
+                    if (!r.ok) throw new Error("HTTP error");
+                    const d = await r.json(); return d.candidates[0].content.parts[0].text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\*(.*?)\*/g, '<em>$1</em>').replace(/\n/g, '<br>');
+                } catch(e) { return "KI Server momentan überlastet. Bitte versuche es später noch einmal."; }
+            },
+            askAIInHub: async function() {
+                const i = document.getElementById('ai-question-input'); const b = document.getElementById('ai-ask-btn'); const box = document.getElementById('ai-answer-box');
+                const qText = i.value.trim(); if(!qText) return;
+                i.disabled = b.disabled = true; b.innerText = "Denkt..."; box.classList.remove('hidden'); box.innerHTML = "<span class='animate-pulse text-moe-primary font-bold'>Der Tutor analysiert das Skript...</span>";
+                const p = contentDB.pillars.find(x => x.id === this.state.session.hubId);
+                /* NOTE: p.content is from internal DB, trusted HTML content used in AI prompt */
+                const ans = await this.callAI(`Du bist akademischer Tutor für BWL. Antworte basierend auf dem Skript: ${p ? p.content : 'BWL'}\nFrage des Studenten: ${qText}`);
+                box.innerHTML = ans; i.value = ""; i.disabled = b.disabled = false; b.innerText = "Anfragen";
+            },
+            explainWithAI: async function() {
+                const q = this.state.session.qs[this.state.session.idx]; const box = document.getElementById('ai-explain-box'); const btn = document.getElementById('ai-explain-btn');
+                btn.disabled = true; btn.innerHTML = "✨ KI generiert Erklärung..."; box.classList.remove('hidden'); box.innerHTML = "<span class='animate-pulse text-moe-primary'>Einen Moment bitte...</span>";
+                const userAns = q.o[this.state.session.lastChoice]; const correctAns = q.o[q.c];
+                const ans = await this.callAI(`Student hat MC-Frage beantwortet.\nFrage: ${q.q}\nStudenten-Antwort: ${userAns}\nKorrekte Antwort: ${correctAns}\nKurze Erklärung im Skript: ${q.expl}\nErkläre kurz, motivierend und verständlich warum die Antwort falsch/richtig ist (max 4 Sätze). Sprich den Studenten direkt an.`);
+                box.innerHTML = ans; btn.innerHTML = "✨ KI-Erklärung abgeschlossen";
+            },
+
+            /* OPT #3: Keyboard navigation */
+            initKeyboardNav: function() {
+                document.addEventListener('keydown', (e) => {
+                    const quizView = document.getElementById('view-quiz');
+                    const flashView = document.getElementById('view-flashcards');
+                    const isQuizActive = quizView && !quizView.classList.contains('hidden');
+                    const isFlashActive = flashView && !flashView.classList.contains('hidden');
+
+                    /* OPT #3: Escape closes modals */
+                    if (e.key === 'Escape') {
+                        ['modal-retry', 'modal-perfect', 'modal-abort', 'modal-reset', 'modal-btc'].forEach(id => {
+                            const m = document.getElementById(id);
+                            if (m && !m.classList.contains('hidden')) { m.classList.add('hidden'); e.preventDefault(); }
+                        });
+                        return;
+                    }
+
+                    /* Don't handle keys if user is typing in an input */
+                    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+                    if (isQuizActive) {
+                        /* A/B/C/D keys select answers */
+                        const keyMap = { 'a': 0, 'b': 1, 'c': 2, 'd': 3 };
+                        const ansIdx = keyMap[e.key.toLowerCase()];
+                        if (ansIdx !== undefined && !this.state.session.answered) {
+                            e.preventDefault();
+                            this.handleAnswer(ansIdx);
+                            return;
+                        }
+                        /* Enter/Space advances to next question */
+                        if ((e.key === 'Enter' || e.key === ' ') && this.state.session.answered) {
+                            e.preventDefault();
+                            this.nextQuestion();
+                            return;
+                        }
+                    }
+
+                    if (isFlashActive) {
+                        /* Left/Right arrow keys navigate flashcards */
+                        if (e.key === 'ArrowLeft') { e.preventDefault(); this.nextFlashcard(-1); return; }
+                        if (e.key === 'ArrowRight') { e.preventDefault(); this.nextFlashcard(1); return; }
+                        /* Space to flip */
+                        if (e.key === ' ') { e.preventDefault(); this.flipFlashcard(); return; }
+                    }
+                });
+            },
+
+            /* OPT #4: Mobile swipe for flashcards */
+            initFlashcardSwipe: function() {
+                const container = document.getElementById('flashcard-container');
+                if (!container) return;
+                let startX = 0;
+                let startY = 0;
+                let tracking = false;
+
+                container.addEventListener('touchstart', (e) => {
+                    startX = e.touches[0].clientX;
+                    startY = e.touches[0].clientY;
+                    tracking = true;
+                }, { passive: true });
+
+                container.addEventListener('touchend', (e) => {
+                    if (!tracking) return;
+                    tracking = false;
+                    const endX = e.changedTouches[0].clientX;
+                    const endY = e.changedTouches[0].clientY;
+                    const dx = endX - startX;
+                    const dy = endY - startY;
+
+                    /* Only trigger swipe if horizontal movement is significant and greater than vertical */
+                    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+                        if (dx > 0) {
+                            this.nextFlashcard(-1); /* Swipe right = previous */
+                        } else {
+                            this.nextFlashcard(1); /* Swipe left = next */
+                        }
+                    }
+                }, { passive: true });
+            }
+        };
+        app.init();
+    </script>
+</body>
+</html>
